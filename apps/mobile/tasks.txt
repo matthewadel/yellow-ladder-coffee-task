@@ -1,0 +1,8 @@
+replace launcher icon on android and ios
+implement absolute imports and it would be better it it worked for the whole repo
+
+
+
+react-native-linear-gradient
+react-native-size-matters to guaranteee responsivity on all screens starting from small screens to ipads and tablets
+check connectiity using netInfo, creating a acustom hook for listnenting to connectivity changees and savign it to context as a global variable to listen to any change in connectivity anywhere in the app,
