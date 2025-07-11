@@ -1,8 +1,7 @@
-replace launcher icon on android and ios
+handle colors throughout the application
 implement absolute imports and it would be better it it worked for the whole repo
 flatlist inside coffeelist pagination and implement onRefresh
-when he is online just send his previous orders to the server and delete them from redux
-create new success message after request sent to the server or warning message if the user is offline
+when he is online just send his previous orders to the server and delete them from redux and show a success message to him
 
 
 react-native-linear-gradient
@@ -10,3 +9,4 @@ react-native-size-matters to guaranteee responsivity on all screens starting fro
 check connectiity using netInfo, creating a acustom hook for listnenting to connectivity changees and savign it to context as a global variable to listen to any change in connectivity anywhere in the app,
 react-native-vector-icons
 react-navigation using stack navigator
+react-native-reanimated to have some animations in the app

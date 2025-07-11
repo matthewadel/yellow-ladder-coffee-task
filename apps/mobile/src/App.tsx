@@ -6,6 +6,7 @@ import { store } from './store';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { NetworkProvider } from './context/NetworkContext';
 import { RootNavigator } from './navigation';
+import { Toast } from './ui/toast-simple';
 
 function App() {
   const networkState = useNetworkStatus();
@@ -16,6 +17,7 @@ function App() {
         <NetworkProvider networkState={networkState}>
           <NavigationContainer>
             <RootNavigator />
+            <Toast />
           </NavigationContainer>
         </NetworkProvider>
       </SafeAreaProvider>

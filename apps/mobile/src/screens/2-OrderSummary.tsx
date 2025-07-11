@@ -17,6 +17,7 @@ import {
     OrderList,
 } from '../components/2-OrderSummary';
 import { useNetworkContext } from '../context';
+import { showToast } from '../ui/toast-simple';
 
 export const OrderSummaryScreen: React.FC = () => {
     const navigation = useNavigation();
@@ -64,12 +65,17 @@ export const OrderSummaryScreen: React.FC = () => {
 
 
     const handleSubmitOrder = () => {
-        if (!isInternetReachable)
+        if (!isInternetReachable) {
+
             dispatch(createOrder({
                 id: new Date().getTime().toString(),
                 order: orderItems,
                 orderTimestamp: new Date().toISOString()
             }));
+            showToast('your order is saved, once connected to the internet, we\'ll create everything for you', 'warning');
+        }
+        else
+            showToast('Order submitted successfully!', 'success');
 
         onSubmitOrder();
         navigation.goBack();
