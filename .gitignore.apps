@@ -1,0 +1,54 @@
+# React Native specific
+apps/mobile/android/app/build/
+apps/mobile/ios/build/
+apps/mobile/android/app/release/
+apps/mobile/ios/DerivedData/
+
+# Metro
+apps/mobile/metro.config.js
+
+# Bundle artifacts
+apps/mobile/*.jsbundle
+
+# React Native Gradle
+apps/mobile/android/app/build/
+apps/mobile/android/builds/
+apps/mobile/android/gradle/
+apps/mobile/android/gradlew
+apps/mobile/android/gradlew.bat
+apps/mobile/android/local.properties
+
+# React Native iOS
+apps/mobile/ios/Pods/
+apps/mobile/ios/build/
+apps/mobile/ios/*.xcworkspace
+apps/mobile/ios/*.xcodeproj/xcuserdata/
+apps/mobile/ios/*.xcodeproj/project.xcworkspace/
+
+# FastLane
+apps/mobile/ios/fastlane/report.xml
+apps/mobile/ios/fastlane/Preview.html
+apps/mobile/ios/fastlane/screenshots/
+apps/mobile/ios/fastlane/test_output/
+
+# CocoaPods
+apps/mobile/ios/Pods/
+apps/mobile/ios/Podfile.lock
+
+# Android
+apps/mobile/android/app/build/
+apps/mobile/android/build/
+apps/mobile/android/gradle/
+apps/mobile/android/gradlew
+apps/mobile/android/gradlew.bat
+apps/mobile/android/local.properties
+apps/mobile/android/app/debug.keystore
+
+# API build
+apps/api/dist/
+apps/api/build/
+
+# Web build
+apps/web/.next/
+apps/web/out/
+apps/web/build/
