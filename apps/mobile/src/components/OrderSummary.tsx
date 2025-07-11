@@ -9,6 +9,7 @@ import {
     TouchableWithoutFeedback,
 } from 'react-native';
 import { s } from 'react-native-size-matters';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface OrderItem {
     id: string;
@@ -77,7 +78,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <View style={styles.header}>
             <Text style={styles.headerTitle}>Order Summary</Text>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Text style={styles.closeButtonText}>✕</Text>
+                <Icon name="close" size={20} color="#666" />
             </TouchableOpacity>
         </View>
     );

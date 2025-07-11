@@ -68,23 +68,10 @@ export const CoffeeSizeModal: React.FC<CoffeeSizeModalProps> = ({
             }
         };
 
-        const getSizeImage = () => {
-            switch (size.toLowerCase()) {
-                case 'small':
-                    return { width: s(18), height: s(18) };
-                case 'medium':
-                    return { width: s(24), height: s(24) };
-                case 'large':
-                    return { width: s(30), height: s(30) };
-                default:
-                    return { width: s(24), height: s(24) };
-            }
-        };
-
         return (
             <Image
                 source={getImageSource()}
-                style={[styles.sizeIconImage, getSizeImage()]}
+                style={styles.imageSize}
                 resizeMode="contain"
             />
         );
@@ -238,9 +225,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    sizeIconImage: {
-        // Base style, size will be overridden by getSizeIcon
-    },
     sizeDetails: {
         flex: 1,
         overflow: 'hidden',
@@ -254,7 +238,7 @@ const styles = StyleSheet.create({
     sizeDescription: {
         fontSize: s(10),
         color: '#6B7280',
-        flex: 1,
+        width: '95%',
     },
     priceInfo: {
         alignItems: 'flex-end',
@@ -284,4 +268,7 @@ const styles = StyleSheet.create({
         color: '#666',
         fontWeight: '500',
     },
+    imageSize: {
+        width: s(50), height: s(50)
+    }
 });

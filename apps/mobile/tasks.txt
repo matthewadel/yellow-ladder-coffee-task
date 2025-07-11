@@ -2,8 +2,6 @@ replace launcher icon on android and ios
 implement absolute imports and it would be better it it worked for the whole repo
 flatlist inside coffeelist pagination and implement onRefresh
 save data in redux in case that the user is offline and when he is online just send his previous orders to the server and delete them from redux
-install react-native-vector-icons
-replace drink sizes images
 
 
 react-native-linear-gradient
