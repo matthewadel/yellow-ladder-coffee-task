@@ -3,9 +3,10 @@ import { StyleSheet, } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { CoffeeList, Header } from '../components';
 import { SafeAreaView } from 'react-native-safe-area-context';
+// import { useSelector } from 'react-redux';
 
 export const CreateOrder = () => {
-
+    // const orders = useSelector((state: any) => state.orders);
     return (
         <LinearGradient
             colors={['#6F4E37', '#8B4513', '#A0522D']}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
     View,
     StyleSheet,
@@ -9,18 +9,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute, } from '@react-navigation/native';
 import { OrderItem } from '../types';
+import { useAppDispatch } from '../store/hooks';
+import { createOrder } from '../store/ordersSlice';
 import {
     OrderSummaryHeader,
     OrderSummaryFooter,
     OrderList,
 } from '../components/2-OrderSummary';
+import { useNetworkContext } from '../context';
 
 export const OrderSummaryScreen: React.FC = () => {
     const navigation = useNavigation();
     const route = useRoute<any>();
+    const dispatch = useAppDispatch();
     const [orderItems, setOrderItems] = useState<OrderItem[]>([])
 
     const { orderItems: inputOrderItems, onEditItem, onRemoveItem, onSubmitOrder } = route.params;
+    const { isInternetReachable } = useNetworkContext();
 
     useEffect(() => {
         if (inputOrderItems)
@@ -59,6 +64,13 @@ export const OrderSummaryScreen: React.FC = () => {
 
 
     const handleSubmitOrder = () => {
+        if (!isInternetReachable)
+            dispatch(createOrder({
+                id: new Date().getTime().toString(),
+                order: orderItems,
+                orderTimestamp: new Date().toISOString()
+            }));
+
         onSubmitOrder();
         navigation.goBack();
     };
@@ -79,7 +91,7 @@ export const OrderSummaryScreen: React.FC = () => {
                         onRemoveItem={handleRemoveItem}
                     />
                     <OrderSummaryFooter
-                    orderItems={orderItems}
+                        orderItems={orderItems}
                         onSubmitOrder={handleSubmitOrder}
                     />
                 </View>

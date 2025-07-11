@@ -11,3 +11,10 @@ export interface CoffeeItem {
     description: string;
     prices: Record<string, number>[]
 }
+
+export interface OrdersState {
+    id: string
+    order: OrderItem[]
+    orderTimestamp: string | undefined
+
+}
