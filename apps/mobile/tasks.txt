@@ -2,6 +2,7 @@ replace launcher icon on android and ios
 implement absolute imports and it would be better it it worked for the whole repo
 flatlist inside coffeelist pagination and implement onRefresh
 save data in redux in case that the user is offline and when he is online just send his previous orders to the server and delete them from redux
+create new success message after request sent to the server or warning message if the user is offline
 
 
 react-native-linear-gradient

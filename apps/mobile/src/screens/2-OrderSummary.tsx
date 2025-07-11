@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -11,24 +11,26 @@ import { s } from 'react-native-size-matters';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList, OrderItem } from '../types/navigation';
-import { SCREENS } from '../navigation/constants';
-
-type OrderSummaryScreenRouteProp = RouteProp<RootStackParamList, typeof SCREENS.ORDER_SUMMARY>;
-type OrderSummaryScreenNavigationProp = StackNavigationProp<RootStackParamList, typeof SCREENS.ORDER_SUMMARY>;
+import { useNavigation, useRoute, } from '@react-navigation/native';
+import { OrderItem } from '../types';
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
+
 export const OrderSummaryScreen: React.FC = () => {
-    const navigation = useNavigation<OrderSummaryScreenNavigationProp>();
-    const route = useRoute<OrderSummaryScreenRouteProp>();
-    
-    const { orderItems, onEditItem, onRemoveItem, onSubmitOrder } = route.params;
+    const navigation = useNavigation();
+    const route = useRoute<any>();
+    const [orderItems, setOrderItems] = useState<OrderItem[]>([])
+
+    const { orderItems: inputOrderItems, onEditItem, onRemoveItem, onSubmitOrder } = route.params;
+
+    useEffect(() => {
+        if (inputOrderItems)
+            setOrderItems([...inputOrderItems])
+    }, [inputOrderItems])
 
     const calculateTotal = () => {
-        return orderItems.reduce((total, item) => total + item.price, 0);
+        return orderItems.reduce((total: number, item: OrderItem) => total + item.price, 0);
     };
 
     const handleEditItem = (item: OrderItem) => {
@@ -36,42 +38,35 @@ export const OrderSummaryScreen: React.FC = () => {
         navigation.goBack();
     };
 
+    const OnAlertAcceptPress = (itemId: string) => {
+        setOrderItems(prev => prev.filter(item => item.id !== itemId));
+
+        onRemoveItem(itemId);
+        if (orderItems.length === 1) {
+            navigation.goBack();
+        }
+
+    }
+
     const handleRemoveItem = (itemId: string) => {
         Alert.alert(
             'Remove Item',
             'Are you sure you want to remove this item from your order?',
             [
                 { text: 'Cancel', style: 'cancel' },
-                { 
-                    text: 'Remove', 
+                {
+                    text: 'Remove',
                     style: 'destructive',
-                    onPress: () => {
-                        onRemoveItem(itemId);
-                        if (orderItems.length === 1) {
-                            navigation.goBack();
-                        }
-                    }
+                    onPress: () => OnAlertAcceptPress(itemId)
                 }
             ]
         );
     };
 
+
     const handleSubmitOrder = () => {
-        Alert.alert(
-            'Submit Order',
-            'Are you sure you want to submit this order?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                { 
-                    text: 'Submit', 
-                    style: 'default',
-                    onPress: () => {
-                        onSubmitOrder();
-                        navigation.goBack();
-                    }
-                }
-            ]
-        );
+        onSubmitOrder();
+        navigation.goBack();
     };
 
     const renderOrderItem = ({ item }: { item: OrderItem }) => {
@@ -108,8 +103,8 @@ export const OrderSummaryScreen: React.FC = () => {
 
     const renderHeader = () => (
         <View style={styles.header}>
-            <TouchableOpacity 
-                style={styles.backButton} 
+            <TouchableOpacity
+                style={styles.backButton}
                 onPress={() => navigation.goBack()}
             >
                 <Icon name="arrow-left" size={20} color="#FFFFFF" />

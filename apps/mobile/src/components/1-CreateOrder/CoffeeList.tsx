@@ -1,88 +1,79 @@
-import React, { useMemo, useState, useCallback } from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import React, { useMemo, useState, useCallback, useEffect } from 'react'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { s } from 'react-native-size-matters';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { CoffeeSizeModal } from './CoffeeSizeModal';
-import { RootStackParamList, OrderItem } from '../types/navigation';
-import { SCREENS } from '../navigation/constants';
+import { CoffeeItem, OrderItem } from '../../types';
+import { SCREENS } from '../../navigation/constants';
 
-interface CoffeeItem {
-    id: string;
-    name: string;
-    description: string;
-    prices: Record<string, number>[]
-}
-
-type CoffeeListNavigationProp = StackNavigationProp<RootStackParamList, typeof SCREENS.CREATE_ORDER>;
+const coffeeItems: CoffeeItem[] = [
+    {
+        id: '1',
+        name: 'Espresso',
+        description: 'Rich, bold shot of pure coffee',
+        prices: [
+            { small: 2.0 } as Record<string, number>,
+            { medium: 2.5 } as Record<string, number>,
+            { large: 3.0 } as Record<string, number>
+        ]
+    },
+    {
+        id: '2',
+        name: 'Latte',
+        description: 'Smooth espresso with steamed milk',
+        prices: [
+            { small: 3.5 } as Record<string, number>,
+            { medium: 3.9 } as Record<string, number>,
+            { large: 4.3 } as Record<string, number>
+        ]
+    },
+    {
+        id: '3',
+        name: 'Iced Americano',
+        description: 'Espresso shots over ice with cold water',
+        prices: [
+            { medium: 2.5 } as Record<string, number>,
+            { large: 3.0 } as Record<string, number>
+        ]
+    },
+    {
+        id: '4',
+        name: 'Cappuccino',
+        description: 'Classic Italian blend with velvety microfoam',
+        prices: [
+            { small: 2.0 } as Record<string, number>,
+            { medium: 3.0 } as Record<string, number>,
+            { large: 3.5 } as Record<string, number>
+        ]
+    },
+    {
+        id: '5',
+        name: 'Mocha',
+        description: 'Rich espresso meets premium dark chocolate',
+        prices: [
+            { small: 2.0 } as Record<string, number>,
+            { medium: 3.5 } as Record<string, number>,
+            { large: 4.0 } as Record<string, number>
+        ]
+    },
+    {
+        id: '6',
+        name: 'Cold Brew',
+        description: '12-hour steeped coffee with natural sweetness',
+        prices: [
+            { small: 2.0 } as Record<string, number>,
+            { medium: 2.8 } as Record<string, number>,
+            { large: 3.3 } as Record<string, number>
+        ]
+    },
+]
 
 export const CoffeeList = () => {
-    const navigation = useNavigation<CoffeeListNavigationProp>();
+    const navigation = useNavigation<any>();
     const [selectedCoffee, setSelectedCoffee] = useState<CoffeeItem | null>(null);
+    const [updatedCoffee, setUpdatedCoffee] = useState<CoffeeItem | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-
-    const coffeeItems: CoffeeItem[] = useMemo(() => [
-        {
-            id: '1',
-            name: 'Espresso',
-            description: 'Rich, bold shot of pure coffee',
-            prices: [
-                { small: 2.0 } as Record<string, number>,
-                { medium: 2.5 } as Record<string, number>,
-                { large: 3.0 } as Record<string, number>
-            ]
-        },
-        {
-            id: '2',
-            name: 'Latte',
-            description: 'Smooth espresso with steamed milk',
-            prices: [
-                { small: 3.5 } as Record<string, number>,
-                { medium: 3.9 } as Record<string, number>,
-                { large: 4.3 } as Record<string, number>
-            ]
-        },
-        {
-            id: '3',
-            name: 'Iced Americano',
-            description: 'Espresso shots over ice with cold water',
-            prices: [
-                { medium: 2.5 } as Record<string, number>,
-                { large: 3.0 } as Record<string, number>
-            ]
-        },
-        {
-            id: '4',
-            name: 'Cappuccino',
-            description: 'Classic Italian blend with velvety microfoam',
-            prices: [
-                { small: 2.0 } as Record<string, number>,
-                { medium: 3.0 } as Record<string, number>,
-                { large: 3.5 } as Record<string, number>
-            ]
-        },
-        {
-            id: '5',
-            name: 'Mocha',
-            description: 'Rich espresso meets premium dark chocolate',
-            prices: [
-                { small: 2.0 } as Record<string, number>,
-                { medium: 3.5 } as Record<string, number>,
-                { large: 4.0 } as Record<string, number>
-            ]
-        },
-        {
-            id: '6',
-            name: 'Cold Brew',
-            description: '12-hour steeped coffee with natural sweetness',
-            prices: [
-                { small: 2.0 } as Record<string, number>,
-                { medium: 2.8 } as Record<string, number>,
-                { large: 3.3 } as Record<string, number>
-            ]
-        },
-    ], []);
 
     const handleCoffeePress = (coffee: CoffeeItem) => {
         setSelectedCoffee(coffee);
@@ -90,9 +81,11 @@ export const CoffeeList = () => {
     };
 
     const handleSizeSelect = (orderItem: OrderItem) => {
-        setOrderItems(prev => [...prev, orderItem]);
-        console.log('Order added:', orderItem);
-        console.log('All orders:', [...orderItems, orderItem]);
+        if (selectedCoffee)
+            setOrderItems(prev => [...prev, orderItem]);
+        else if (updatedCoffee) {
+            setOrderItems(prev => prev.map(order => order.id === updatedCoffee.id ? orderItem : order));
+        }
     };
 
     const handleModalClose = () => {
@@ -105,27 +98,16 @@ export const CoffeeList = () => {
     }, []);
 
     const handleSubmitOrder = useCallback(() => {
-        console.log('Submitting order:', orderItems);
-        // Here you would typically send the order to your backend
-        Alert.alert(
-            'Order Submitted!', 
-            `Total: £${orderItems.reduce((total, item) => total + item.price, 0).toFixed(2)}`,
-            [{ text: 'OK' }]
-        );
         setOrderItems([]);
-    }, [orderItems]);
+    }, []);
 
     const handleEditItem = useCallback((item: OrderItem) => {
-        // Find the original coffee item to re-open the size selection modal
         const coffeeItem = coffeeItems.find(coffee => coffee.name === item.name);
         if (coffeeItem) {
-            // Remove the item from the order first
-            handleRemoveItem(item.id);
-            // Open size selection
-            setSelectedCoffee(coffeeItem);
+            setUpdatedCoffee({ ...coffeeItem, id: item.id });
             setModalVisible(true);
         }
-    }, [handleRemoveItem, coffeeItems]);
+    }, []);
 
     const handleShowOrderSummary = useCallback(() => {
         navigation.navigate(SCREENS.ORDER_SUMMARY, {
@@ -135,6 +117,14 @@ export const CoffeeList = () => {
             onSubmitOrder: handleSubmitOrder,
         });
     }, [navigation, orderItems, handleEditItem, handleRemoveItem, handleSubmitOrder]);
+
+    useEffect(() => {
+
+        if (updatedCoffee && !modalVisible) {
+            setUpdatedCoffee(null);
+            handleShowOrderSummary()
+        }
+    }, [updatedCoffee, modalVisible, handleShowOrderSummary])
 
     const renderSize = (size: string, index: number) => {
         const getSizeStyle = (sizeName: string) => {
@@ -158,9 +148,8 @@ export const CoffeeList = () => {
     };
 
     const renderCoffeeItem = ({ item }: { item: CoffeeItem }) => {
-        // Get the minimum price from all available sizes
         const minPrice = Math.min(...item.prices.map(priceObj => Object.values(priceObj)[0]));
-        
+
         return (
             <TouchableOpacity key={item.id} style={styles.coffeeCard} onPress={() => handleCoffeePress(item)}>
                 <View style={styles.coffeeCardContent}>
@@ -190,8 +179,8 @@ export const CoffeeList = () => {
                     </Text>
                 </View>
                 {orderItems.length > 0 && (
-                    <TouchableOpacity 
-                        style={styles.orderSummaryButton} 
+                    <TouchableOpacity
+                        style={styles.orderSummaryButton}
                         onPress={handleShowOrderSummary}
                     >
                         <Text style={styles.orderSummaryButtonText}>
@@ -214,9 +203,10 @@ export const CoffeeList = () => {
             />
             <CoffeeSizeModal
                 visible={modalVisible}
-                coffeeItem={selectedCoffee}
+                coffeeItem={selectedCoffee || updatedCoffee}
                 onClose={handleModalClose}
                 onSelectSize={handleSizeSelect}
+                updateItem={!!updatedCoffee}
             />
         </>
     )

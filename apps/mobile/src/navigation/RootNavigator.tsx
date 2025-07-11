@@ -1,10 +1,9 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { RootStackParamList } from '../types/navigation';
 import * as screenComponents from '../screens';
 import { SCREENS } from './constants';
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator();
 
 export const RootNavigator: React.FC = () => {
     return (

@@ -10,7 +10,7 @@ import {
     Image,
 } from 'react-native';
 import { s } from 'react-native-size-matters';
-import { cupSmall, cupMedium, cupLarge } from '../assets';
+import { cupSmall, cupMedium, cupLarge } from '../../assets';
 
 interface CoffeeItem {
     id: string;
@@ -28,6 +28,7 @@ interface OrderItem {
 
 interface CoffeeSizeModalProps {
     visible: boolean;
+    updateItem: boolean;
     coffeeItem: CoffeeItem | null;
     onClose: () => void;
     onSelectSize: (orderItem: OrderItem) => void;
@@ -38,6 +39,7 @@ const { width } = Dimensions.get('window');
 export const CoffeeSizeModal: React.FC<CoffeeSizeModalProps> = ({
     visible,
     coffeeItem,
+    updateItem,
     onClose,
     onSelectSize,
 }) => {
@@ -45,7 +47,7 @@ export const CoffeeSizeModal: React.FC<CoffeeSizeModalProps> = ({
 
     const handleSizeSelect = (size: string, price: number) => {
         const orderItem: OrderItem = {
-            id: `${coffeeItem.id}-${size}-${Date.now()}`,
+            id: updateItem ? coffeeItem.id : `${coffeeItem.id}-${size}-${Date.now()}`,
             name: coffeeItem.name,
             size,
             price,

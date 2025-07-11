@@ -1,5 +1,5 @@
 import { NavigationProp } from '@react-navigation/native';
-import { RootStackParamList, OrderItem } from '../types/navigation';
+import { RootStackParamList, OrderItem } from '../types';
 import { SCREENS } from './constants';
 
 export type NavigationService = NavigationProp<RootStackParamList>;

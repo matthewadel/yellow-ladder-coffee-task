@@ -1,8 +1,8 @@
 import React from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
-import { cup } from '../assets'
+import { cup } from '../../assets'
 import { s } from 'react-native-size-matters';
-import { useNetworkContext } from '../context/NetworkContext';
+import { useNetworkContext } from '../../context/NetworkContext';
 
 const Header = () => {
     const { isInternetReachable } = useNetworkContext();
