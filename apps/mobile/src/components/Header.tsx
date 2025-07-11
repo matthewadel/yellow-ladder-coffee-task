@@ -54,11 +54,11 @@ const styles = StyleSheet.create({
     },
     onlineText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: s(16),
         fontWeight: '500',
     },
     headerTitle: {
-        fontSize: 18,
+        fontSize: s(18),
         fontWeight: '600',
         color: 'white',
         position: 'absolute',
