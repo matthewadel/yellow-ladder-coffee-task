@@ -7,3 +7,5 @@ save data in redux in case that the user is offline and when he is online just s
 react-native-linear-gradient
 react-native-size-matters to guaranteee responsivity on all screens starting from small screens to ipads and tablets
 check connectiity using netInfo, creating a acustom hook for listnenting to connectivity changees and savign it to context as a global variable to listen to any change in connectivity anywhere in the app,
+react-native-vector-icons
+react-navigation using stack navigator
