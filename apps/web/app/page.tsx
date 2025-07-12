@@ -1,14 +1,14 @@
 "use client"
-import { OrdersTable, StatsCards, LoadingState, ErrorAlert } from './components';
+import { OrdersTable, StatsCards, } from './components';
 import { useOrders } from './hooks';
+import { ErrorAlert, LoadingState } from './ui';
 
 export default function Home() {
-  const { 
-    orders, 
-    loading, 
-    error, 
-    refreshOrders, 
-    updateOrderStatus,  
+  const {
+    orders,
+    loading,
+    error,
+    updateOrderStatus,
   } = useOrders();
 
   return (
@@ -18,22 +18,22 @@ export default function Home() {
       hasData={orders.length > 0}
       loadingMessage="Loading orders..."
     >
-      <div className="p-6">
+      <div className="h-full flex flex-col p-6">
         {error && (
           <ErrorAlert
             error={`API connection issue: ${error}. Please try refreshing.`}
             variant="warning"
-            className="mb-6"
+            className="mb-6 flex-shrink-0"
           />
         )}
-        
+
         <StatsCards orders={orders} />
         <OrdersTable
           orders={orders}
           onUpdateOrderStatus={updateOrderStatus}
-          onRefresh={refreshOrders}
           isLoading={loading}
         />
+
       </div>
     </LoadingState>
   );

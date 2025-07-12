@@ -19,6 +19,7 @@ export class OrdersController {
         const response = await this.ordersService.createOrder(req.body.orderDrinks);
         sendSuccessResponse<Order>({
             res,
+            statusCode: 201,
             ...response
         });
     });

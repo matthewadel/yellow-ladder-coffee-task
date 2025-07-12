@@ -23,10 +23,6 @@ export const useOrders = () => {
     }
   }, []);
 
-  const refreshOrders = useCallback(async () => {
-    await fetchOrders();
-  }, [fetchOrders]);
-
   const updateStatus = useCallback(async (orderId: string, newStatus: IOrderStatus) => {
     try {
       // Optimistically update the UI
@@ -57,7 +53,6 @@ export const useOrders = () => {
     orders,
     loading,
     error,
-    refreshOrders,
     updateOrderStatus: updateStatus
   };
 };

@@ -3,8 +3,7 @@ import { FaDollarSign } from "react-icons/fa";
 import { BiTime } from "react-icons/bi";
 import { HiArrowTrendingUp } from "react-icons/hi2";
 import React, { ReactNode } from "react";
-import { Order } from "@yellow-ladder-coffee/types";
-import { calculateOrderStats } from "app/utils";
+import { IOrderStatus, Order } from "@yellow-ladder-coffee/types";
 
 // Types
 interface StatCardData {
@@ -13,13 +12,6 @@ interface StatCardData {
   icon: ReactNode;
   bgColor: string;
   iconColor: string;
-}
-
-interface StatsCardsProps {
-  totalOrders: number;
-  totalRevenue: number;
-  pendingOrdersCount: number;
-  avgOrderValue: number;
 }
 
 // Reusable Components
@@ -82,6 +74,33 @@ const createStatsData = (
       iconColor: "#9333ea"
     }
   ];
+
+interface OrderStats {
+  totalOrders: number;
+  pendingOrdersCount: number;
+  totalRevenue: number;
+  avgOrderValue: number;
+  completedOrders: number;
+  cancelledOrders: number;
+}
+
+const calculateOrderStats = (orders: Order[]): OrderStats => {
+  const pendingOrders = orders.filter(order => order.status === IOrderStatus.PENDING);
+  const completedOrders = orders.filter(order => order.status === IOrderStatus.COMPLETED);
+  const cancelledOrders = orders.filter(order => order.status === IOrderStatus.CANCELLED);
+
+  const totalRevenue = completedOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+  const avgOrderValue = completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0;
+
+  return {
+    totalOrders: orders.length,
+    pendingOrdersCount: pendingOrders.length,
+    totalRevenue,
+    avgOrderValue,
+    completedOrders: completedOrders.length,
+    cancelledOrders: cancelledOrders.length
+  };
+};
 
 export function StatsCards({ orders }: { orders: Order[] }) {
   const { totalOrders, totalRevenue, pendingOrdersCount, avgOrderValue } = calculateOrderStats(orders);

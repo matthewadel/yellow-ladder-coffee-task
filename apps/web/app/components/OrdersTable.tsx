@@ -11,7 +11,6 @@ interface OrdersTableProps {
     isLoading?: boolean;
 }
 
-// Types for reusable components
 interface ExportOption {
     label: string;
     icon: React.ReactNode;
@@ -124,16 +123,6 @@ const TableCell = ({ children, className = "" }: { children: React.ReactNode; cl
     </td>
 );
 
-// Utility functions
-const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    });
-};
-
 const downloadFile = (blob: Blob, filename: string) => {
     const link = document.createElement('a');
     if (link.download !== undefined) {
@@ -148,7 +137,7 @@ const downloadFile = (blob: Blob, filename: string) => {
     }
 };
 
-export function OrdersTable({ orders, onUpdateOrderStatus, onRefresh, isLoading = false }: OrdersTableProps) {
+export function OrdersTable({ orders, onUpdateOrderStatus, isLoading = false }: OrdersTableProps) {
     const [openMenu, setOpenMenu] = useState<string | null>(null);
     const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
@@ -198,11 +187,11 @@ export function OrdersTable({ orders, onUpdateOrderStatus, onRefresh, isLoading 
     };
 
     const handleRefresh = async () => {
-        if (onRefresh) {
-            await onRefresh();
-        } else {
-            window.location.reload();
-        }
+        // if (onRefresh) {
+        //     await onRefresh();
+        // } else {
+        window.location.reload();
+        // }
     };
 
     // Configuration data
@@ -235,8 +224,8 @@ export function OrdersTable({ orders, onUpdateOrderStatus, onRefresh, isLoading 
     ];
 
     return (
-        <div className="bg-white rounded-xl border border-gray-200">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+        <div className="bg-white rounded-xl border border-gray-200 h-full flex flex-col flex-1 min-h-0">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0">
                 <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
                 <div className="flex gap-3">
                     <Button onClick={handleRefresh} variant="primary" disabled={isLoading}>
@@ -260,9 +249,9 @@ export function OrdersTable({ orders, onUpdateOrderStatus, onRefresh, isLoading 
                 </div>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="flex-1 overflow-auto">
                 <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 sticky top-0">
                         <tr>
                             <TableHeader>Order ID</TableHeader>
                             <TableHeader>Timestamp</TableHeader>
@@ -278,14 +267,22 @@ export function OrdersTable({ orders, onUpdateOrderStatus, onRefresh, isLoading 
                                     <span className="text-sm font-medium text-gray-900">{order.id}</span>
                                 </TableCell>
                                 <TableCell>
-                                    <div className="text-sm text-gray-900">{order.orderTimestamp}</div>
-                                    <div className="text-sm text-gray-500">{order.orderTimestamp}</div>
+                                    {new Date(order.orderTimestamp || "").toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    })}
+                                    <div className="text-sm text-gray-500">{new Date(order.orderTimestamp || "").toLocaleTimeString('en-US', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: true
+                                    })}</div>
                                 </TableCell>
                                 <TableCell>
                                     <div className="space-y-1">
                                         {order.orderDrinks?.map((item, itemIndex) => (
                                             <div key={itemIndex} className="flex justify-between text-sm">
-                                                <span className="text-gray-900">{item.name}</span>
+                                                <span className="text-gray-900">{item.name} <span className='text-orange-600'>({item.size})</span></span>
                                                 <span className="text-orange-600 font-medium">£{item.price.toFixed(2)}</span>
                                             </div>
                                         ))}
@@ -314,7 +311,7 @@ export function OrdersTable({ orders, onUpdateOrderStatus, onRefresh, isLoading 
                                                     isOpen={openMenu === order.id}
                                                     onClose={() => setOpenMenu(null)}
                                                     options={getStatusActions(order.id)}
-                                                    className="top-8 min-w-[120px]"
+                                                    className="top-1/2 -translate-y-1/2 min-w-[120px]"
                                                 />
                                             </div>
                                         )}
