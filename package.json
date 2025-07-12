@@ -8,20 +8,21 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
+    "dev": "concurrently \"npm run dev:shared-types\" \"npm run dev:web\" \"npm run dev:server\"",
     "dev:web": "npm run dev --workspace=apps/web",
     "dev:server": "npm run dev --workspace=apps/server",
     "dev:mobile": "npm run start --workspace=apps/mobile",
     "dev:android": "npm run android --workspace=apps/mobile",
     "dev:ios": "npm run ios --workspace=apps/mobile",
-    "build": "npm run build --workspace=apps/web && npm run build --workspace=apps/server",
+    "build": "npm run build:shared-types && npm run build --workspace=apps/web && npm run build --workspace=apps/server",
+    "build:shared-types": "npm run build --workspace=packages/shared-types",
     "build:web": "npm run build --workspace=apps/web",
     "build:server": "npm run build --workspace=apps/server",
     "build:mobile": "npm run build --workspace=apps/mobile",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
     "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules",
-    "postinstall": "cd apps/mobile/ios && bundle install && pod install"
+    "postinstall": "npm run build --workspace=packages/shared-types && cd apps/mobile/ios && bundle install && pod install"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",

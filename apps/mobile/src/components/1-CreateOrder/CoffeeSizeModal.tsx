@@ -79,9 +79,8 @@ export const CoffeeSizeModal: React.FC<CoffeeSizeModalProps> = ({
         }
     };
 
-    const renderSizeOption = (priceObj: Record<string, number>, index: number) => {
-        const size = Object.keys(priceObj)[0];
-        const price = Object.values(priceObj)[0];
+    const renderSizeOption = (priceObj: { size: string, price: number }, index: number) => {
+        const { size, price } = priceObj;
 
         return (
             <TouchableOpacity

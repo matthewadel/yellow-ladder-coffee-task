@@ -12,9 +12,9 @@ const coffeeItems: Drink[] = [
         name: 'Espresso',
         description: 'Rich, bold shot of pure coffee',
         prices: [
-            { small: 2.0 } as Record<string, number>,
-            { medium: 2.5 } as Record<string, number>,
-            { large: 3.0 } as Record<string, number>
+            { size: 'small', price: 2.0 },
+            { size: 'medium', price: 2.5 },
+            { size: 'large', price: 3.0 }
         ]
     },
     {
@@ -22,9 +22,9 @@ const coffeeItems: Drink[] = [
         name: 'Latte',
         description: 'Smooth espresso with steamed milk',
         prices: [
-            { small: 3.5 } as Record<string, number>,
-            { medium: 3.9 } as Record<string, number>,
-            { large: 4.3 } as Record<string, number>
+            { size: 'small', price: 3.5 },
+            { size: 'medium', price: 3.9 },
+            { size: 'large', price: 4.3 }
         ]
     },
     {
@@ -32,8 +32,8 @@ const coffeeItems: Drink[] = [
         name: 'Iced Americano',
         description: 'Espresso shots over ice with cold water',
         prices: [
-            { medium: 2.5 } as Record<string, number>,
-            { large: 3.0 } as Record<string, number>
+            { size: 'medium', price: 2.5 },
+            { size: 'large', price: 3.0 }
         ]
     },
     {
@@ -41,9 +41,9 @@ const coffeeItems: Drink[] = [
         name: 'Cappuccino',
         description: 'Classic Italian blend with velvety microfoam',
         prices: [
-            { small: 2.0 } as Record<string, number>,
-            { medium: 3.0 } as Record<string, number>,
-            { large: 3.5 } as Record<string, number>
+            { size: 'small', price: 2.0 },
+            { size: 'medium', price: 3.0 },
+            { size: 'large', price: 3.5 }
         ]
     },
     {
@@ -51,9 +51,9 @@ const coffeeItems: Drink[] = [
         name: 'Mocha',
         description: 'Rich espresso meets premium dark chocolate',
         prices: [
-            { small: 2.0 } as Record<string, number>,
-            { medium: 3.5 } as Record<string, number>,
-            { large: 4.0 } as Record<string, number>
+            { size: 'small', price: 2.0 },
+            { size: 'medium', price: 3.5 },
+            { size: 'large', price: 4.0 }
         ]
     },
     {
@@ -61,9 +61,9 @@ const coffeeItems: Drink[] = [
         name: 'Cold Brew',
         description: '12-hour steeped coffee with natural sweetness',
         prices: [
-            { small: 2.0 } as Record<string, number>,
-            { medium: 2.8 } as Record<string, number>,
-            { large: 3.3 } as Record<string, number>
+            { size: 'small', price: 2.0 },
+            { size: 'medium', price: 2.8 },
+            { size: 'large', price: 3.3 }
         ]
     },
 ]
@@ -148,7 +148,7 @@ export const CoffeeList = () => {
     };
 
     const renderCoffeeItem = ({ item }: { item: Drink }) => {
-        const minPrice = Math.min(...item.prices.map((priceObj: Record<string, number>) => Object.values(priceObj)[0]));
+        const minPrice = Math.min(...item.prices.map((priceObj) => priceObj.price));
 
         return (
             <TouchableOpacity key={item.id} style={styles.coffeeCard} onPress={() => handleCoffeePress(item)}>
@@ -157,7 +157,7 @@ export const CoffeeList = () => {
                         <Text style={styles.coffeeName}>{item.name}</Text>
                         <Text numberOfLines={1} style={styles.coffeeDescription}>{item.description}</Text>
                         <View style={styles.sizesContainer}>
-                            {item.prices.map((priceObj: Record<string, number>, index: number) => renderSize(Object.keys(priceObj)[0], index))}
+                            {item.prices.map((priceObj, index: number) => renderSize(priceObj.size, index))}
                         </View>
                     </View>
                     <View style={styles.priceContainer}>

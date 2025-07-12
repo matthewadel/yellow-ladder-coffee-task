@@ -9,7 +9,7 @@ export interface Drink {
     id: string;
     name: string;
     description: string;
-    prices: Record<string, number>[]
+    prices: { size: string, price: number }[]
 }
 
 export interface Order {

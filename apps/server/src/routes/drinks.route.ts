@@ -9,3 +9,5 @@ router
     .get(
         drinksController.getAllDrinks
     );
+
+export default router;
