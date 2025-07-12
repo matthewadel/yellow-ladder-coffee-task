@@ -18,6 +18,7 @@ const updateOrderStatus = z.object({
     body: z.object({
         status: z.enum(Object.values(IOrderStatus) as [string, ...string[]])
     })
+    .strict()
 });
 
 
