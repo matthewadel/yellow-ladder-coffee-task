@@ -3,10 +3,10 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { s } from 'react-native-size-matters';
 import { useNavigation } from '@react-navigation/native';
 import { CoffeeSizeModal } from './CoffeeSizeModal';
-import { CoffeeItem, OrderItem } from '../../types';
+import { Drink, OrderDrink } from '@yellow-ladder-coffee/shared-types';
 import { SCREENS } from '../../navigation/constants';
 
-const coffeeItems: CoffeeItem[] = [
+const coffeeItems: Drink[] = [
     {
         id: '1',
         name: 'Espresso',
@@ -70,17 +70,17 @@ const coffeeItems: CoffeeItem[] = [
 
 export const CoffeeList = () => {
     const navigation = useNavigation<any>();
-    const [selectedCoffee, setSelectedCoffee] = useState<CoffeeItem | null>(null);
-    const [updatedCoffee, setUpdatedCoffee] = useState<CoffeeItem | null>(null);
+    const [selectedCoffee, setSelectedCoffee] = useState<Drink | null>(null);
+    const [updatedCoffee, setUpdatedCoffee] = useState<Drink | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
-    const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+    const [orderItems, setOrderItems] = useState<OrderDrink[]>([]);
 
-    const handleCoffeePress = (coffee: CoffeeItem) => {
+    const handleCoffeePress = (coffee: Drink) => {
         setSelectedCoffee(coffee);
         setModalVisible(true);
     };
 
-    const handleSizeSelect = (orderItem: OrderItem) => {
+    const handleSizeSelect = (orderItem: OrderDrink) => {
         if (selectedCoffee)
             setOrderItems(prev => [...prev, orderItem]);
         else if (updatedCoffee) {
@@ -101,7 +101,7 @@ export const CoffeeList = () => {
         setOrderItems([]);
     }, []);
 
-    const handleEditItem = useCallback((item: OrderItem) => {
+    const handleEditItem = useCallback((item: OrderDrink) => {
         const coffeeItem = coffeeItems.find(coffee => coffee.name === item.name);
         if (coffeeItem) {
             setUpdatedCoffee({ ...coffeeItem, id: item.id });
@@ -147,8 +147,8 @@ export const CoffeeList = () => {
         );
     };
 
-    const renderCoffeeItem = ({ item }: { item: CoffeeItem }) => {
-        const minPrice = Math.min(...item.prices.map(priceObj => Object.values(priceObj)[0]));
+    const renderCoffeeItem = ({ item }: { item: Drink }) => {
+        const minPrice = Math.min(...item.prices.map((priceObj: Record<string, number>) => Object.values(priceObj)[0]));
 
         return (
             <TouchableOpacity key={item.id} style={styles.coffeeCard} onPress={() => handleCoffeePress(item)}>
@@ -157,7 +157,7 @@ export const CoffeeList = () => {
                         <Text style={styles.coffeeName}>{item.name}</Text>
                         <Text numberOfLines={1} style={styles.coffeeDescription}>{item.description}</Text>
                         <View style={styles.sizesContainer}>
-                            {item.prices.map((priceObj, index) => renderSize(Object.keys(priceObj)[0], index))}
+                            {item.prices.map((priceObj: Record<string, number>, index: number) => renderSize(Object.keys(priceObj)[0], index))}
                         </View>
                     </View>
                     <View style={styles.priceContainer}>

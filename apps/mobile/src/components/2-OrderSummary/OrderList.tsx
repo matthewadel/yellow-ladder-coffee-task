@@ -2,11 +2,11 @@ import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { s } from 'react-native-size-matters';
 import { OrderItem } from './OrderItem';
-import { OrderItem as OrderItemType } from '../../types';
+import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
 
 interface OrderListProps {
-    orderItems: OrderItemType[];
-    onEditItem: (item: OrderItemType) => void;
+    orderItems: OrderDrink[];
+    onEditItem: (item: OrderDrink) => void;
     onRemoveItem: (itemId: string) => void;
 }
 
@@ -17,7 +17,7 @@ export const OrderList: React.FC<OrderListProps> = ({
     onEditItem,
     onRemoveItem,
 }) => {
-    const renderOrderItem = ({ item }: { item: OrderItemType }) => (
+    const renderOrderItem = ({ item }: { item: OrderDrink }) => (
         <OrderItem
             item={item}
             onEdit={onEditItem}

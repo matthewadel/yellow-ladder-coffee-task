@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { OrderItem, OrdersState } from '../types';
+import { OrderDrink, Order } from '@yellow-ladder-coffee/shared-types';
 
-const initialState: { orders: OrdersState[] } = {
+const initialState: { orders: Order[] } = {
     orders: [],
 };
 
@@ -9,7 +9,7 @@ const ordersSlice = createSlice({
     name: 'orders',
     initialState,
     reducers: {
-        createOrder: (state, action: PayloadAction<{ order: OrderItem[]; orderTimestamp: string, id: string }>) => {
+        createOrder: (state, action: PayloadAction<{ orderDrinks: OrderDrink[]; orderTimestamp: string, id: string }>) => {
             state.orders.unshift(action.payload);
         },
 

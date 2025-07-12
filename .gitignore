@@ -70,6 +70,14 @@ jspm_packages/
 .cache
 .parcel-cache
 
+# Build output directories
+dist/
+build/
+out/
+
+# TypeScript compiled files
+*.tsbuildinfo
+
 # next.js build output
 .next
 

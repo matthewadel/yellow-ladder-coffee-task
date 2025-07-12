@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     StyleSheet,
@@ -8,7 +8,7 @@ import { s } from 'react-native-size-matters';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute, } from '@react-navigation/native';
-import { OrderItem } from '../types';
+import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
 import { useAppDispatch } from '../store/hooks';
 import { createOrder } from '../store/ordersSlice';
 import {
@@ -23,7 +23,7 @@ export const OrderSummaryScreen: React.FC = () => {
     const navigation = useNavigation();
     const route = useRoute<any>();
     const dispatch = useAppDispatch();
-    const [orderItems, setOrderItems] = useState<OrderItem[]>([])
+    const [orderItems, setOrderItems] = useState<OrderDrink[]>([])
 
     const { orderItems: inputOrderItems, onEditItem, onRemoveItem, onSubmitOrder } = route.params;
     const { isInternetReachable } = useNetworkContext();
@@ -33,7 +33,7 @@ export const OrderSummaryScreen: React.FC = () => {
             setOrderItems([...inputOrderItems])
     }, [inputOrderItems])
 
-    const handleEditItem = (item: OrderItem) => {
+    const handleEditItem = (item: OrderDrink) => {
         onEditItem(item);
         navigation.goBack();
     };
@@ -69,7 +69,7 @@ export const OrderSummaryScreen: React.FC = () => {
 
             dispatch(createOrder({
                 id: new Date().getTime().toString(),
-                order: orderItems,
+                orderDrinks: orderItems,
                 orderTimestamp: new Date().toISOString()
             }));
             showToast('your order is saved, once connected to the internet, we\'ll create everything for you', 'warning');

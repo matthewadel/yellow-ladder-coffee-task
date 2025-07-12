@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { s } from 'react-native-size-matters';
-import { OrderItem as OrderItemType } from '../../types';
+import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
 import MaterialIconsIcon from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 
 interface OrderItemProps {
-    item: OrderItemType;
-    onEdit: (item: OrderItemType) => void;
+    item: OrderDrink;
+    onEdit: (item: OrderDrink) => void;
     onRemove: (itemId: string) => void;
 }
 

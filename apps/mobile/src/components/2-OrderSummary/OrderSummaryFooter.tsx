@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { s } from 'react-native-size-matters';
-import { OrderItem } from '../../types';
+import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
 
 interface OrderSummaryFooterProps {
     onSubmitOrder: () => void;
-    orderItems: OrderItem[];
+    orderItems: OrderDrink[];
 }
 
 export const OrderSummaryFooter: React.FC<OrderSummaryFooterProps> = ({
@@ -15,7 +15,7 @@ export const OrderSummaryFooter: React.FC<OrderSummaryFooterProps> = ({
     const isDisabled = orderItems.length === 0;
 
     const calculateTotal = () => {
-        return orderItems.reduce((total: number, item: OrderItem) => total + item.price, 0);
+        return orderItems.reduce((total: number, item: OrderDrink) => total + item.price, 0);
     };
 
     return (

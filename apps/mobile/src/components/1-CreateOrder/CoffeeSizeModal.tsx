@@ -11,27 +11,14 @@ import {
 } from 'react-native';
 import { s } from 'react-native-size-matters';
 import { cupSmall, cupMedium, cupLarge } from '../../assets';
-
-interface CoffeeItem {
-    id: string;
-    name: string;
-    description: string;
-    prices: Record<string, number>[];
-}
-
-interface OrderItem {
-    id: string;
-    name: string;
-    size: string;
-    price: number;
-}
+import type { Drink, OrderDrink } from '@yellow-ladder-coffee/shared-types';
 
 interface CoffeeSizeModalProps {
     visible: boolean;
     updateItem: boolean;
-    coffeeItem: CoffeeItem | null;
+    coffeeItem: Drink | null;
     onClose: () => void;
-    onSelectSize: (orderItem: OrderItem) => void;
+    onSelectSize: (orderItem: OrderDrink) => void;
 }
 
 const { width } = Dimensions.get('window');
@@ -46,7 +33,7 @@ export const CoffeeSizeModal: React.FC<CoffeeSizeModalProps> = ({
     if (!coffeeItem) return null;
 
     const handleSizeSelect = (size: string, price: number) => {
-        const orderItem: OrderItem = {
+        const orderItem: OrderDrink = {
             id: updateItem ? coffeeItem.id : `${coffeeItem.id}-${size}-${Date.now()}`,
             name: coffeeItem.name,
             size,

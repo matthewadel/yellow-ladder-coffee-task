@@ -10,3 +10,4 @@ check connectiity using netInfo, creating a acustom hook for listnenting to conn
 react-native-vector-icons
 react-navigation using stack navigator
 react-native-reanimated to have some animations in the app
+packages folder for shared data between app, it is local packages so you have to import a file in the package.json of the app that will use this data, make sure to run npm run build after any change in packages to make sure that dist folder has the latest changes
