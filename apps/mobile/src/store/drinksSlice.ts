@@ -20,12 +20,18 @@ const initialState: DrinksState = {
 // Async thunk for fetching drinks from the API
 export const fetchDrinks = createAsyncThunk(
     'drinks/fetchDrinks',
-    async (_, { rejectWithValue }) => {
+    async (_, { rejectWithValue, getState }) => {
         try {
             const apiOptions = getApiOptions();
             const data = await getDrinks(apiOptions);
             return data;
         } catch (error) {
+            // Check if we have cached drinks, if so, don't show error for offline case
+            const state = getState() as { drinks: DrinksState };
+            if (state.drinks.drinks.length > 0) {
+                // If we have cached drinks, silently fail and keep using cached data
+                throw new Error('OFFLINE_WITH_CACHE');
+            }
             return rejectWithValue(error instanceof Error ? error.message : 'An unknown error occurred');
         }
     }
@@ -60,7 +66,12 @@ const drinksSlice = createSlice({
             // Handle rejected state
             .addCase(fetchDrinks.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                // If we have cached drinks and failed due to offline, don't set error
+                if (action.error.message === 'OFFLINE_WITH_CACHE' && state.drinks.length > 0) {
+                    state.error = null;
+                } else {
+                    state.error = action.payload as string;
+                }
             });
     },
 });

@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
-import { store } from './store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './store';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { NetworkProvider } from './context/NetworkContext';
 import { RootNavigator } from './navigation';
@@ -13,14 +14,16 @@ function App() {
 
   return (
     <Provider store={store}>
-      <SafeAreaProvider>
-        <NetworkProvider networkState={networkState}>
-          <NavigationContainer>
-            <RootNavigator />
-            <Toast />
-          </NavigationContainer>
-        </NetworkProvider>
-      </SafeAreaProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <SafeAreaProvider>
+          <NetworkProvider networkState={networkState}>
+            <NavigationContainer>
+              <RootNavigator />
+              <Toast />
+            </NavigationContainer>
+          </NetworkProvider>
+        </SafeAreaProvider>
+      </PersistGate>
     </Provider>
   );
 }

@@ -7,12 +7,13 @@ import { Drink, OrderDrink } from '@yellow-ladder-coffee/types';
 import { SCREENS } from '../../navigation/constants';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchDrinks } from '../../store/drinksSlice';
+import { useNetworkContext } from '../../context';
 
 export const CoffeeList = () => {
     const navigation = useNavigation<any>();
     const dispatch = useAppDispatch();
     const { drinks, loading, error } = useAppSelector((state) => state.drinks);
-    
+    const { isInternetReachable } = useNetworkContext();
     const [selectedCoffee, setSelectedCoffee] = useState<Drink | null>(null);
     const [updatedCoffee, setUpdatedCoffee] = useState<Drink | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
@@ -28,9 +29,9 @@ export const CoffeeList = () => {
         dispatch(fetchDrinks());
     }, [dispatch]);
 
-    // Show error alert if there's an error fetching drinks
+    // Show error alert if there's an error fetching drinks and we don't have cached data
     useEffect(() => {
-        if (error) {
+        if (error && drinks.length === 0) {
             Alert.alert(
                 'Error Loading Drinks', 
                 error, 
@@ -40,7 +41,7 @@ export const CoffeeList = () => {
                 ]
             );
         }
-    }, [error, dispatch]);
+    }, [error, drinks.length, dispatch]);
 
     const handleCoffeePress = (coffee: Drink) => {
         setSelectedCoffee(coffee);
@@ -163,10 +164,15 @@ export const CoffeeList = () => {
         <View style={styles.emptyState}>
             <Text style={styles.emptyStateTitle}>No drinks available</Text>
             <Text style={styles.emptyStateSubtitle}>
-                {loading ? 'Loading drinks...' : 'Pull down to refresh'}
+                {loading 
+                    ? 'Loading drinks...' 
+                    : !isInternetReachable 
+                        ? 'You are offline. Please connect to the internet to load drinks.' 
+                        : 'Pull down to refresh'
+                }
             </Text>
         </View>
-    ), [loading]);
+    ), [loading, isInternetReachable]);
 
     return (
         <>

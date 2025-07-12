@@ -25,6 +25,7 @@
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
     "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules",
+    "fix-mobile-deps": "npm run fix-deps --workspace=apps/mobile",
     "postinstall": "npm run build:packages && cd apps/mobile/ios && bundle install && pod install"
   },
   "devDependencies": {

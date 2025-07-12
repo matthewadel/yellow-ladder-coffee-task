@@ -252,4 +252,4 @@ The Express.js backend API provides RESTful endpoints with comprehensive error h
 
 
 
-**important note:** i wanted to create database using postgreeSQL and manipulate the data inside the tables using typeorm or prisma but i realized that the app is so simple to create adatabase setup for it, it's only three apis not more
+**important note:** i wanted to create database using postgreeSQL and manipulate the data inside the tables using typeorm or prisma but i realized that the app is so simple to create adatabase setup for it, it's only four apis not more
