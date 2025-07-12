@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Drink } from '@yellow-ladder-coffee/types';
 import { getDrinks } from '@yellow-ladder-coffee/api-request';
+import { getApiOptions } from '../utils/apiConfig';
 
 // Define the state interface
 interface DrinksState {
@@ -21,7 +22,8 @@ export const fetchDrinks = createAsyncThunk(
     'drinks/fetchDrinks',
     async (_, { rejectWithValue }) => {
         try {
-            const data = await getDrinks();
+            const apiOptions = getApiOptions();
+            const data = await getDrinks(apiOptions);
             return data;
         } catch (error) {
             return rejectWithValue(error instanceof Error ? error.message : 'An unknown error occurred');

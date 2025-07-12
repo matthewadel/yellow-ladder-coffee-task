@@ -5,6 +5,7 @@ import { useNetworkStatus } from "./useNetworkStatus";
 import { showToast } from "../ui/toast-simple";
 import { createOrder as createOrderAction } from "../store/ordersSlice";
 import { useState } from "react";
+import { getApiOptions } from "../utils/apiConfig";
 
 const useCreateOrder = (resendFailedRequests?: boolean) => {
 
@@ -37,7 +38,8 @@ const useCreateOrder = (resendFailedRequests?: boolean) => {
                     })),
                 };
 
-                const createdOrder = await createOrder(orderData);
+                const apiOptions = getApiOptions();
+                const createdOrder = await createOrder(orderData, apiOptions);
                 
                 if (createdOrder) {
                     showToast('Order Created Successfully!', 'success');

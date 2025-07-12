@@ -21,9 +21,8 @@ interface FooterLink {
 }
 
 // Reusable Components
-const SocialIcon = ({ name, icon, href }: SocialLink) => (
+const SocialIcon = ({ name, icon }: SocialLink) => (
     <a 
-        href={href}
         className="text-gray-400 hover:text-orange-600 transition-colors"
         aria-label={name}
     >
@@ -49,9 +48,8 @@ const NavigationLinks = ({ title, links }: NavigationSection) => (
     </div>
 );
 
-const FooterLink = ({ label, href }: FooterLink) => (
+const FooterLink = ({ label }: FooterLink) => (
     <a 
-        href={href}
         className="text-sm text-gray-500 hover:text-orange-600 transition-colors"
     >
         {label}
@@ -94,7 +92,6 @@ const FOOTER_LINKS: FooterLink[] = [
 const COMPANY_DESCRIPTION = "Premium coffee management system designed to streamline your coffee shop operations. From order tracking to inventory management, we've got you covered.";
 
 export function Footer() {
-    const currentYear = new Date().getFullYear();
 
     return (
         <footer className="bg-white border-t border-gray-200 mt-auto">
@@ -124,7 +121,7 @@ export function Footer() {
                     <div className="flex flex-col md:flex-row justify-between items-center">
                         <div className="flex items-center space-x-6 mb-4 md:mb-0">
                             <p className="text-sm text-gray-500">
-                                © {currentYear} Yellow Ladder Coffee. All rights reserved.
+                                © 2025 Yellow Ladder Coffee. All rights reserved.
                             </p>
                             <div className="flex items-center space-x-4">
                                 {FOOTER_LINKS.map((link) => (

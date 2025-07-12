@@ -1,7 +1,5 @@
-// Simple HTTP Client + Coffee Orders API
 import { Order, IOrderStatus, Drink } from '@yellow-ladder-coffee/types';
 
-// Simple HTTP request function
 export async function request<T>(url: string, options: {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: any;
@@ -42,50 +40,42 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-// Base URL for the API
-const getBaseUrl = () => {
-  // Check if we're in React Native environment
-  try {
-    // @ts-ignore
-    const Platform = require('react-native').Platform;
-    if (Platform.OS === 'android') {
-      return 'http://10.0.2.2:5001';
-    }
-  } catch (e) {
-    // Not in React Native environment, use localhost
-  }
-  return 'http://localhost:5001';
-};
+// API Options interface
+export interface ApiOptions {
+  baseUrl?: string;
+}
 
-const BASE_URL = getBaseUrl();
+// Default base URL
+const DEFAULT_BASE_URL = 'http://localhost:5001';
 
-// Coffee Orders API functions
-export const ordersApi = {
-  // Get all drinks
-  async getDrinks(): Promise<Drink[]> {
-    const response = await request<ApiResponse<Drink[]>>(`${BASE_URL}/api/drinks`, { method: 'GET' });
-    return response.data;
-  },
 
-  // Get all orders
-  async getOrders(): Promise<Order[]> {
-    const response = await request<ApiResponse<Order[]>>(`${BASE_URL}/api/orders`, { method: 'GET' });
-    return response.data;
-  },
+// Get all drinks
+export async function getDrinks(options: ApiOptions = {}): Promise<Drink[]> {
+  const baseUrl = options.baseUrl || DEFAULT_BASE_URL;
+  const response = await request<ApiResponse<Drink[]>>(`${baseUrl}/api/drinks`, { method: 'GET' });
+  return response.data;
+}
 
-  // Update order status
-  async updateOrderStatus(orderId: string, status: IOrderStatus): Promise<Order> {
-    const response = await request<ApiResponse<Order>>(`${BASE_URL}/api/orders/${orderId}/change-status`, { method: 'POST', body: { status } });
-    return response.data;
-  },
+// Get all orders
+export async function getOrders(options: ApiOptions = {}): Promise<Order[]> {
+  const baseUrl = options.baseUrl || DEFAULT_BASE_URL;
+  const response = await request<ApiResponse<Order[]>>(`${baseUrl}/api/orders`, { method: 'GET' });
+  return response.data;
+}
 
-  // Create a new order
-  async createOrder(orderData: { orderDrinks: { id: string, size: string }[] }): Promise<Order> {
-    const response = await request<ApiResponse<Order>>(`${BASE_URL}/api/orders`, { method: 'POST', body: orderData });
-    return response.data;
-  }
-};
+// Update order status
+export async function updateOrderStatus(orderId: string, status: IOrderStatus, options: ApiOptions = {}): Promise<Order> {
+  const baseUrl = options.baseUrl || DEFAULT_BASE_URL;
+  const response = await request<ApiResponse<Order>>(`${baseUrl}/api/orders/${orderId}/change-status`, { method: 'POST', body: { status } });
+  return response.data;
+}
 
-// Export individual functions for convenience
-export const { getDrinks, getOrders, updateOrderStatus, createOrder } = ordersApi;
+// Create a new order
+export async function createOrder(orderData: { orderDrinks: { id: string, size: string }[] }, options: ApiOptions = {}): Promise<Order> {
+  const baseUrl = options.baseUrl || DEFAULT_BASE_URL;
+  const response = await request<ApiResponse<Order>>(`${baseUrl}/api/orders`, { method: 'POST', body: orderData });
+  return response.data;
+}
+
+
 
