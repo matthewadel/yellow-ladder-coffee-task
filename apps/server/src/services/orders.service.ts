@@ -6,7 +6,7 @@ const orders: Order[] = [];
 export class OrdersService {
 
     async getAllOrders(): Promise<{ data: Order[], message: string }> {
-        return { data: orders, message: "All orders fetched successfully" };
+        return { data: orders.map(order => ({ ...order, total: order.orderDrinks.reduce((sum, val) => sum + val.price, 0) })), message: "All orders fetched successfully" };
     }
 
     async createOrder(inputOrderDrinks: { id: string, size: string }[]): Promise<{ data: Order | null, message: string }> {

@@ -1,159 +1,261 @@
 'use client';
 
+import { IOrderStatus, Order } from '@yellow-ladder-coffee/shared-types';
 import { useState } from 'react';
 import { HiRefresh, HiDownload, HiChevronDown, HiDocumentText, HiCode, HiDotsVertical, HiCheck, HiX } from 'react-icons/hi';
 
-type OrderStatus = 'Pending' | 'Completed' | 'Cancelled';
-
-interface Order {
-    id: string;
-    timestamp: string;
-    items: { name: string; price: number }[];
-    total: number;
-    status: OrderStatus;
-}
-
 interface OrdersTableProps {
     orders: Order[];
-    onUpdateOrderStatus: (orderId: string, newStatus: OrderStatus) => void;
+    onUpdateOrderStatus: (orderId: string, newStatus: IOrderStatus) => void;
+    onRefresh?: () => Promise<void> | void;
+    isLoading?: boolean;
 }
 
-export function OrdersTable({ orders, onUpdateOrderStatus }: OrdersTableProps) {
+// Types for reusable components
+interface ExportOption {
+    label: string;
+    icon: React.ReactNode;
+    action: () => void;
+}
+
+interface ActionButton {
+    label: string;
+    icon: React.ReactNode;
+    onClick: () => void;
+    className: string;
+}
+
+interface DropdownMenuProps {
+    isOpen: boolean;
+    onClose: () => void;
+    options: (ExportOption | ActionButton)[];
+    className?: string;
+}
+
+// Reusable Components
+const Button = ({
+    children,
+    onClick,
+    className = "",
+    variant = "primary",
+    disabled = false
+}: {
+    children: React.ReactNode;
+    onClick: () => void;
+    className?: string;
+    variant?: "primary" | "secondary";
+    disabled?: boolean;
+}) => {
+    const baseClass = "px-4 py-2 rounded-lg transition-colors flex items-center gap-2";
+    const variants = {
+        primary: "bg-orange-500 text-white hover:bg-orange-600",
+        secondary: "border border-gray-300 text-gray-700 hover:bg-gray-50"
+    };
+
+    const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : "";
+
+    return (
+        <button
+            onClick={disabled ? undefined : onClick}
+            disabled={disabled}
+            className={`${baseClass} ${variants[variant]} ${disabledClass} ${className}`}
+        >
+            {children}
+        </button>
+    );
+};
+
+const DropdownMenu = ({ isOpen, onClose, options, className = "" }: DropdownMenuProps) => {
+    if (!isOpen) return null;
+
+    return (
+        <>
+            <div className="fixed inset-0 z-10" onClick={onClose}></div>
+            <div className={`absolute right-0 top-12 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px] ${className}`}>
+                {options.map((option, index) => (
+                    <button
+                        key={index}
+                        onClick={() => {
+                            if ('action' in option) {
+                                option.action();
+                            } else {
+                                option.onClick();
+                            }
+                            onClose();
+                        }}
+                        className={
+                            'className' in option ? option.className :
+                                "w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                        }
+                    >
+                        {option.icon}
+                        {option.label}
+                    </button>
+                ))}
+            </div>
+        </>
+    );
+};
+
+const StatusBadge = ({ status }: { status?: IOrderStatus }) => {
+    const statusStyles = {
+        [IOrderStatus.COMPLETED]: 'bg-green-100 text-green-800',
+        [IOrderStatus.PENDING]: 'bg-yellow-100 text-yellow-800',
+        [IOrderStatus.CANCELLED]: 'bg-red-100 text-red-800'
+    };
+
+    const defaultStyle = 'bg-gray-100 text-gray-800';
+    return (
+        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${status ? statusStyles[status] : defaultStyle}`}>
+            {status ?? 'Unknown'}
+        </span>
+    );
+};
+
+const TableHeader = ({ children }: { children: React.ReactNode }) => (
+    <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+        {children}
+    </th>
+);
+
+const TableCell = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+    <td className={`py-4 px-6 ${className}`}>
+        {children}
+    </td>
+);
+
+// Utility functions
+const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+};
+
+const downloadFile = (blob: Blob, filename: string) => {
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+};
+
+export function OrdersTable({ orders, onUpdateOrderStatus, onRefresh, isLoading = false }: OrdersTableProps) {
     const [openMenu, setOpenMenu] = useState<string | null>(null);
     const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
-    const formatTime = (timestamp: string) => {
-        const date = new Date(timestamp);
-        return date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-    };
-
-    const formatDate = (timestamp: string) => {
-        const date = new Date(timestamp);
-        return date.toLocaleDateString('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: 'numeric'
-        });
-    };
-
-    const handleUpdateStatus = (orderId: string, newStatus: OrderStatus) => {
+    const handleUpdateStatus = (orderId: string, newStatus: IOrderStatus) => {
         onUpdateOrderStatus(orderId, newStatus);
         setOpenMenu(null);
     };
 
+    const createExportData = () => {
+        return orders.map(order => ({
+            orderId: order.id,
+            date: order.orderTimestamp,
+            time: order.orderTimestamp,
+            items: order.orderDrinks,
+            total: order.total,
+            status: order.status,
+            timestamp: order.orderTimestamp
+        }));
+    };
+
     const handleExport = () => {
-        // Create CSV content
         const headers = ['Order ID', 'Date', 'Time', 'Items', 'Total', 'Status'];
         const csvContent = [
             headers.join(','),
             ...orders.map(order => {
-                const itemsString = order.items.map(item => `${item.name} (£${item.price.toFixed(2)})`).join('; ');
+                const itemsString = order.orderDrinks?.map(item => `${item.name} (£${item.price.toFixed(2)})`).join('; ');
                 return [
                     order.id,
-                    formatDate(order.timestamp),
-                    formatTime(order.timestamp),
-                    `"${itemsString}"`, // Wrap in quotes to handle commas in items
-                    `£${order.total.toFixed(2)}`,
+                    order.orderTimestamp,
+                    order.orderTimestamp,
+                    `"${itemsString}"`,
+                    `£${order.total?.toFixed(2)}`,
                     order.status
                 ].join(',');
             })
         ].join('\n');
 
-        // Create and download the file
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         downloadFile(blob, `orders-export-${new Date().toISOString().split('T')[0]}.csv`);
-        setExportMenuOpen(false);
     };
 
     const handleExportJSON = () => {
-        // Create JSON content with formatted data
-        const jsonData = orders.map(order => ({
-            orderId: order.id,
-            date: formatDate(order.timestamp),
-            time: formatTime(order.timestamp),
-            items: order.items,
-            total: order.total,
-            status: order.status,
-            timestamp: order.timestamp
-        }));
-
+        const jsonData = createExportData();
         const jsonContent = JSON.stringify(jsonData, null, 2);
         const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
         downloadFile(blob, `orders-export-${new Date().toISOString().split('T')[0]}.json`);
-        setExportMenuOpen(false);
     };
 
-    const downloadFile = (blob: Blob, filename: string) => {
-        const link = document.createElement('a');
-
-        if (link.download !== undefined) {
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+    const handleRefresh = async () => {
+        if (onRefresh) {
+            await onRefresh();
+        } else {
+            window.location.reload();
         }
     };
 
-    const handleRefresh = () => {
-        // Simulate refresh action
-        window.location.reload();
-    };
+    // Configuration data
+    const exportOptions: ExportOption[] = [
+        {
+            label: "Export as CSV",
+            icon: <HiDocumentText className="w-4 h-4" />,
+            action: handleExport
+        },
+        {
+            label: "Export as JSON",
+            icon: <HiCode className="w-4 h-4" />,
+            action: handleExportJSON
+        }
+    ];
+
+    const getStatusActions = (orderId: string): ActionButton[] => [
+        {
+            label: "Complete",
+            icon: <HiCheck className="w-4 h-4" />,
+            onClick: () => handleUpdateStatus(orderId, IOrderStatus.COMPLETED),
+            className: "w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center gap-2"
+        },
+        {
+            label: "Cancel",
+            icon: <HiX className="w-4 h-4" />,
+            onClick: () => handleUpdateStatus(orderId, IOrderStatus.CANCELLED),
+            className: "w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 flex items-center gap-2"
+        }
+    ];
 
     return (
         <div className="bg-white rounded-xl border border-gray-200">
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
                 <div className="flex gap-3">
-                    <button
-                        onClick={handleRefresh}
-                        className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
-                    >
-                        <HiRefresh className="w-4 h-4" />
-                        Refresh
-                    </button>
+                    <Button onClick={handleRefresh} variant="primary" disabled={isLoading}>
+                        <HiRefresh className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                        {isLoading ? 'Refreshing...' : 'Refresh'}
+                    </Button>
 
                     <div className="relative">
-                        <button
-                            onClick={() => setExportMenuOpen(!exportMenuOpen)}
-                            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-                        >
+                        <Button onClick={() => setExportMenuOpen(!exportMenuOpen)} variant="secondary">
                             <HiDownload className="w-4 h-4" />
                             Export
                             <HiChevronDown className="w-4 h-4" />
-                        </button>
+                        </Button>
 
-                        {exportMenuOpen && (
-                            <>
-                                <div
-                                    className="fixed inset-0 z-10"
-                                    onClick={() => setExportMenuOpen(false)}
-                                ></div>
-                                <div className="absolute right-0 top-12 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px]">
-                                    <button
-                                        onClick={handleExport}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                                    >
-                                        <HiDocumentText className="w-4 h-4" />
-                                        Export as CSV
-                                    </button>
-                                    <button
-                                        onClick={handleExportJSON}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                                    >
-                                        <HiCode className="w-4 h-4" />
-                                        Export as JSON
-                                    </button>
-                                </div>
-                            </>
-                        )}
+                        <DropdownMenu
+                            isOpen={exportMenuOpen}
+                            onClose={() => setExportMenuOpen(false)}
+                            options={exportOptions}
+                        />
                     </div>
                 </div>
             </div>
@@ -162,51 +264,41 @@ export function OrdersTable({ orders, onUpdateOrderStatus }: OrdersTableProps) {
                 <table className="w-full">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                            <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
-                            <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                            <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                            <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <TableHeader>Order ID</TableHeader>
+                            <TableHeader>Timestamp</TableHeader>
+                            <TableHeader>Items</TableHeader>
+                            <TableHeader>Total</TableHeader>
+                            <TableHeader>Status</TableHeader>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                         {orders.map((order) => (
-                            <tr
-                                key={order.id}
-                                className="hover:bg-yellow-50 transition-colors cursor-pointer"
-                            >
-                                <td className="py-4 px-6">
+                            <tr key={order.id} className="hover:bg-yellow-50 transition-colors cursor-pointer">
+                                <TableCell>
                                     <span className="text-sm font-medium text-gray-900">{order.id}</span>
-                                </td>
-                                <td className="py-4 px-6">
-                                    <div className="text-sm text-gray-900">{formatDate(order.timestamp)}</div>
-                                    <div className="text-sm text-gray-500">{formatTime(order.timestamp)}</div>
-                                </td>
-                                <td className="py-4 px-6">
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-sm text-gray-900">{order.orderTimestamp}</div>
+                                    <div className="text-sm text-gray-500">{order.orderTimestamp}</div>
+                                </TableCell>
+                                <TableCell>
                                     <div className="space-y-1">
-                                        {order.items.map((item, itemIndex) => (
+                                        {order.orderDrinks?.map((item, itemIndex) => (
                                             <div key={itemIndex} className="flex justify-between text-sm">
                                                 <span className="text-gray-900">{item.name}</span>
                                                 <span className="text-orange-600 font-medium">£{item.price.toFixed(2)}</span>
                                             </div>
                                         ))}
                                     </div>
-                                </td>
-                                <td className="py-4 px-6">
-                                    <span className="text-sm font-semibold text-gray-900">£{order.total.toFixed(2)}</span>
-                                </td>
-                                <td className="py-4 px-6">
+                                </TableCell>
+                                <TableCell>
+                                    <span className="text-sm font-semibold text-gray-900">£{order.total?.toFixed(2)}</span>
+                                </TableCell>
+                                <TableCell>
                                     <div className="flex items-center justify-between">
-                                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${order.status === 'Completed'
-                                                ? 'bg-green-100 text-green-800'
-                                                : order.status === 'Pending'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : 'bg-red-100 text-red-800'
-                                            }`}>
-                                            {order.status}
-                                        </span>
+                                        <StatusBadge status={order.status} />
 
-                                        {order.status === 'Pending' && (
+                                        {order.status === IOrderStatus.PENDING && (
                                             <div className="relative">
                                                 <button
                                                     onClick={(e) => {
@@ -218,34 +310,16 @@ export function OrdersTable({ orders, onUpdateOrderStatus }: OrdersTableProps) {
                                                     <HiDotsVertical className="w-4 h-4 text-gray-500" />
                                                 </button>
 
-                                                {openMenu === order.id && (
-                                                    <>
-                                                        <div
-                                                            className="fixed inset-0 z-10"
-                                                            onClick={() => setOpenMenu(null)}
-                                                        ></div>
-                                                        <div className="absolute right-0 top-8 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[120px]">
-                                                            <button
-                                                                onClick={() => handleUpdateStatus(order.id, 'Completed')}
-                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 flex items-center gap-2"
-                                                            >
-                                                                <HiCheck className="w-4 h-4" />
-                                                                Complete
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleUpdateStatus(order.id, 'Cancelled')}
-                                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 flex items-center gap-2"
-                                                            >
-                                                                <HiX className="w-4 h-4" />
-                                                                Cancel
-                                                            </button>
-                                                        </div>
-                                                    </>
-                                                )}
+                                                <DropdownMenu
+                                                    isOpen={openMenu === order.id}
+                                                    onClose={() => setOpenMenu(null)}
+                                                    options={getStatusActions(order.id)}
+                                                    className="top-8 min-w-[120px]"
+                                                />
                                             </div>
                                         )}
                                     </div>
-                                </td>
+                                </TableCell>
                             </tr>
                         ))}
                     </tbody>
@@ -254,5 +328,3 @@ export function OrdersTable({ orders, onUpdateOrderStatus }: OrdersTableProps) {
         </div>
     );
 }
-
-export type { Order, OrderStatus };

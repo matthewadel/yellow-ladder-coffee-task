@@ -17,6 +17,7 @@ export interface Order {
     orderDrinks: OrderDrink[]
     orderTimestamp: string | undefined
     status?: IOrderStatus
+    total?: number
 }
 
 export enum IOrderStatus {

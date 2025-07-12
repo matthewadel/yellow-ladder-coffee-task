@@ -1,6 +1,7 @@
-handle colors throughout the application
+handle colors throughout the application and check the ability to export them to packages to be used by web and mobile
 implement absolute imports and it would be better it it worked for the whole repo
 if there is an api error, message not previewed from the server
+integrate useQuery instead of fetch and check the abvailabillity to use it in both web and mobile
 
 
 react-native-linear-gradient
