@@ -8,15 +8,15 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
     "dev:web": "npm run dev --workspace=apps/web",
-    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:server": "npm run dev --workspace=apps/server",
     "dev:mobile": "npm run start --workspace=apps/mobile",
     "dev:android": "npm run android --workspace=apps/mobile",
     "dev:ios": "npm run ios --workspace=apps/mobile",
-    "build": "npm run build --workspace=apps/web && npm run build --workspace=apps/api",
+    "build": "npm run build --workspace=apps/web && npm run build --workspace=apps/server",
     "build:web": "npm run build --workspace=apps/web",
-    "build:api": "npm run build --workspace=apps/api",
+    "build:server": "npm run build --workspace=apps/server",
     "build:mobile": "npm run build --workspace=apps/mobile",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
@@ -24,13 +24,20 @@
     "postinstall": "cd apps/mobile/ios && bundle install && pod install"
   },
   "devDependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/hpp": "^0.2.6",
     "concurrently": "^8.2.2",
-    "prettier": "^3.1.1",
     "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
     "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "compression": "^1.8.0",
+    "express-rate-limit": "^7.5.1",
+    "hpp": "^0.2.3"
   }
 }
