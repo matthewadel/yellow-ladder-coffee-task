@@ -3,7 +3,7 @@ import { FaDollarSign } from "react-icons/fa";
 import { BiTime } from "react-icons/bi";
 import { HiArrowTrendingUp } from "react-icons/hi2";
 import React, { ReactNode } from "react";
-import { Order } from "@yellow-ladder-coffee/shared-types";
+import { Order } from "@yellow-ladder-coffee/types";
 import { calculateOrderStats } from "app/utils";
 
 // Types

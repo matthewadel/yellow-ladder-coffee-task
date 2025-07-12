@@ -5,7 +5,7 @@ import { CoffeeList, Header } from '../components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNetworkContext } from '../context';
 import { useSelector } from 'react-redux';
-import { Order } from '@yellow-ladder-coffee/shared-types';
+import { Order } from '@yellow-ladder-coffee/types';
 import { useCreateOrder } from '../hooks';
 
 export const CreateOrder = () => {
@@ -22,7 +22,8 @@ export const CreateOrder = () => {
             })
 
         }
-    }, [isInternetReachable, orders, createOrderRequest])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isInternetReachable, orders])
 
     return (
         <LinearGradient

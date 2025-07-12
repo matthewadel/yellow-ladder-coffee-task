@@ -1,4 +1,4 @@
-import { IOrderStatus } from "@yellow-ladder-coffee/shared-types";
+import { IOrderStatus } from "@yellow-ladder-coffee/types";
 import { z } from "zod";
 
 const createOrder = z.object({

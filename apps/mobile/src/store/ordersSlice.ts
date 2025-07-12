@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { OrderDrink, Order } from '@yellow-ladder-coffee/shared-types';
+import { OrderDrink, Order } from '@yellow-ladder-coffee/types';
 
 const initialState: { orders: Order[] } = {
     orders: [],

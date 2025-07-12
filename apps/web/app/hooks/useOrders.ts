@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { IOrderStatus, Order } from '@yellow-ladder-coffee/shared-types'
+import { IOrderStatus, Order } from '@yellow-ladder-coffee/types';
+import { getOrders, updateOrderStatus } from '@yellow-ladder-coffee/api-request';
 
 export const useOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -10,14 +11,9 @@ export const useOrders = () => {
     try {
       setLoading(true);
       setError(null);
-
-      const response = await fetch('http://localhost:5001/api/orders');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch orders: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setOrders(data.data || []);
+      
+      const fetchedOrders = await getOrders();
+      setOrders(fetchedOrders);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load orders';
       setError(errorMessage);
@@ -31,25 +27,15 @@ export const useOrders = () => {
     await fetchOrders();
   }, [fetchOrders]);
 
-  const updateOrderStatus = useCallback(async (orderId: string, newStatus: IOrderStatus) => {
+  const updateStatus = useCallback(async (orderId: string, newStatus: IOrderStatus) => {
     try {
       // Optimistically update the UI
       setOrders(prev => prev.map(order =>
         order.id === orderId ? { ...order, status: newStatus } : order
       ));
 
-      // Send request to server
-      const response = await fetch(`http://localhost:5001/api/orders/${orderId}/change-status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update order status: ${response.status}`);
-      }
+      // Send request to server using simple API
+      await updateOrderStatus(orderId, newStatus);
     } catch (err) {
       // Revert the optimistic update on error
       setOrders(prev => prev.map(order =>
@@ -72,6 +58,6 @@ export const useOrders = () => {
     loading,
     error,
     refreshOrders,
-    updateOrderStatus
+    updateOrderStatus: updateStatus
   };
 };

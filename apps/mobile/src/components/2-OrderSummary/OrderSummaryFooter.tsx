@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { s } from 'react-native-size-matters';
-import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
+import { OrderDrink } from '@yellow-ladder-coffee/types';
 
 interface OrderSummaryFooterProps {
     onSubmitOrder: () => void;

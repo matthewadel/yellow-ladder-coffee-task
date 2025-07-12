@@ -2,7 +2,7 @@ import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { s } from 'react-native-size-matters';
 import { OrderItem } from './OrderItem';
-import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
+import { OrderDrink } from '@yellow-ladder-coffee/types';
 
 interface OrderListProps {
     orderItems: OrderDrink[];

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { s } from 'react-native-size-matters';
 import { cupSmall, cupMedium, cupLarge } from '../../assets';
-import type { Drink, OrderDrink } from '@yellow-ladder-coffee/shared-types';
+import type { Drink, OrderDrink } from '@yellow-ladder-coffee/types';
 
 interface CoffeeSizeModalProps {
     visible: boolean;

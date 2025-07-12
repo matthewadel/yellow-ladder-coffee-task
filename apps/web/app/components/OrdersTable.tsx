@@ -1,6 +1,6 @@
 'use client';
 
-import { IOrderStatus, Order } from '@yellow-ladder-coffee/shared-types';
+import { IOrderStatus, Order } from '@yellow-ladder-coffee/types';
 import { useState } from 'react';
 import { HiRefresh, HiDownload, HiChevronDown, HiDocumentText, HiCode, HiDotsVertical, HiCheck, HiX } from 'react-icons/hi';
 

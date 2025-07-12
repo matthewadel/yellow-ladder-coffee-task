@@ -14,15 +14,18 @@
     "dev:mobile": "npm run start --workspace=apps/mobile",
     "dev:android": "npm run android --workspace=apps/mobile",
     "dev:ios": "npm run ios --workspace=apps/mobile",
-    "build": "npm run build:shared-types && npm run build --workspace=apps/web && npm run build --workspace=apps/server",
-    "build:shared-types": "npm run build --workspace=packages/shared-types",
+    "build": "npm run build:packages && npm run build --workspace=apps/web && npm run build --workspace=apps/server",
+    "build:packages": "npm run build --workspace=packages/types && npm run build --workspace=packages/api-request",
+    "build:shared-types": "npm run build --workspace=packages/types",
+    "build:http-client": "npm run build --workspace=packages/api-request",
+    "build:coffee-orders-api": "npm run build --workspace=packages/api-request",
     "build:web": "npm run build --workspace=apps/web",
     "build:server": "npm run build --workspace=apps/server",
     "build:mobile": "npm run build --workspace=apps/mobile",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
     "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules",
-    "postinstall": "npm run build --workspace=packages/shared-types && cd apps/mobile/ios && bundle install && pod install"
+    "postinstall": "npm run build:packages && cd apps/mobile/ios && bundle install && pod install"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",

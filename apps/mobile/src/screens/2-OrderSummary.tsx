@@ -8,7 +8,7 @@ import { s } from 'react-native-size-matters';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute, } from '@react-navigation/native';
-import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
+import { OrderDrink } from '@yellow-ladder-coffee/types';
 import {
     OrderSummaryHeader,
     OrderSummaryFooter,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { s } from 'react-native-size-matters';
-import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
+import { OrderDrink } from '@yellow-ladder-coffee/types';
 import MaterialIconsIcon from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 

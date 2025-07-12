@@ -1,0 +1,20 @@
+{
+  "name": "@yellow-ladder-coffee/api-request",
+  "version": "1.0.0",
+  "description": "Simple HTTP client and API functions for Yellow Ladder Coffee",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@yellow-ladder-coffee/types": "file:../types"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

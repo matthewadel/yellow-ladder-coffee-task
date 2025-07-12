@@ -1,4 +1,4 @@
-import { Drink } from "@yellow-ladder-coffee/shared-types";
+import { Drink } from "@yellow-ladder-coffee/types";
 
 
 export const coffeeItems: Drink[] = [

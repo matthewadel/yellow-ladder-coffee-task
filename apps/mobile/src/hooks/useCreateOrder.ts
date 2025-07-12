@@ -1,9 +1,9 @@
-import { OrderDrink } from "@yellow-ladder-coffee/shared-types";
+import { OrderDrink } from "@yellow-ladder-coffee/types";
+import { createOrder } from "@yellow-ladder-coffee/api-request";
 import { useAppDispatch } from "../store/hooks";
 import { useNetworkStatus } from "./useNetworkStatus";
 import { showToast } from "../ui/toast-simple";
-import { createOrderAPI } from "../api/requests";
-import { createOrder } from "../store/ordersSlice";
+import { createOrder as createOrderAction } from "../store/ordersSlice";
 import { useState } from "react";
 
 const useCreateOrder = (resendFailedRequests?: boolean) => {
@@ -14,7 +14,7 @@ const useCreateOrder = (resendFailedRequests?: boolean) => {
 
     const saveToRedux = (orderItems: OrderDrink[]) => {
         if (!resendFailedRequests) {
-            dispatch(createOrder({
+            dispatch(createOrderAction({
                 id: new Date().getTime().toString(),
                 orderDrinks: orderItems,
                 orderTimestamp: new Date().toISOString()
@@ -23,41 +23,39 @@ const useCreateOrder = (resendFailedRequests?: boolean) => {
         }
     }
 
-    const createOrderRequest = (orderItems: OrderDrink[]) => {
+    const createOrderRequest = async (orderItems: OrderDrink[]) => {
         if (!isInternetReachable) {
             saveToRedux(orderItems)
         }
         else {
             setIsLoading(true);
-            fetch(createOrderAPI, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+            try {
+                const orderData = {
                     orderDrinks: orderItems.map(item => ({
                         id: item.id.split('-')[0],
                         size: item.size,
                     })),
-                }),
-            })
-                .then(response => { console.log(response); return response.json() })
-                .then(data => {
-                    if (data.data) {
-                        showToast('Order submitted successfully!', 'success');
-                    } else {
-                        saveToRedux(orderItems)
-                    }
-                })
-                .catch(error => {
-                    console.error('Error creating order:', error);
-                    if (isInternetReachable)
-                        showToast(error.message || 'Failed to create order. Please try again.', 'error');
+                };
+
+                const createdOrder = await createOrder(orderData);
+                
+                if (createdOrder) {
+                    showToast('Order Created Successfully!', 'success');
+                } else {
                     saveToRedux(orderItems)
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                })
+                }
+            } catch (error) {
+                console.error('Error creating order:', error);
+                
+                const errorMessage = error instanceof Error ? error.message : 'Failed to create order. Please try again.';
+                
+                if (isInternetReachable) {
+                    showToast(errorMessage, 'error');
+                }
+                saveToRedux(orderItems)
+            } finally {
+                setIsLoading(false);
+            }
         }
     }
 

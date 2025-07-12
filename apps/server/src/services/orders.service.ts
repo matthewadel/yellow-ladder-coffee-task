@@ -1,4 +1,4 @@
-import { IOrderStatus, Order, OrderDrink } from "@yellow-ladder-coffee/shared-types"
+import { IOrderStatus, Order, OrderDrink } from "@yellow-ladder-coffee/types"
 import { coffeeItems } from "./drinks.service";
 import { NotFoundError } from "../utils";
 

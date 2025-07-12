@@ -1,4 +1,4 @@
-import { IOrderStatus, Order } from "@yellow-ladder-coffee/shared-types";
+import { IOrderStatus, Order } from "@yellow-ladder-coffee/types";
 
 
 export interface OrderStats {

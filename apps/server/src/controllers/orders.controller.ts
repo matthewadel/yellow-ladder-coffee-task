@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { asyncWrapper } from "../middlewares";
 import { OrdersService } from "../services";
 import { sendSuccessResponse } from "../utils";
-import { Order } from "@yellow-ladder-coffee/shared-types";
+import { Order } from "@yellow-ladder-coffee/types";
 
 export class OrdersController {
     private readonly ordersService: OrdersService = new OrdersService();

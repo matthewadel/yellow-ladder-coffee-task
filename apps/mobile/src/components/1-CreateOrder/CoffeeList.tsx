@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View, RefreshControl, Ale
 import { s } from 'react-native-size-matters';
 import { useNavigation } from '@react-navigation/native';
 import { CoffeeSizeModal } from './CoffeeSizeModal';
-import { Drink, OrderDrink } from '@yellow-ladder-coffee/shared-types';
+import { Drink, OrderDrink } from '@yellow-ladder-coffee/types';
 import { SCREENS } from '../../navigation/constants';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchDrinks } from '../../store/drinksSlice';

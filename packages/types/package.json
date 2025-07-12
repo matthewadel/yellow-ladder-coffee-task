@@ -1,5 +1,5 @@
 {
-  "name": "@yellow-ladder-coffee/shared-types",
+  "name": "@yellow-ladder-coffee/types",
   "version": "1.0.0",
   "description": "Shared TypeScript types for Yellow Ladder Coffee applications",
   "main": "dist/index.js",
