@@ -1,7 +1,7 @@
 'use client';
 
 import { IOrderStatus, Order } from '@yellow-ladder-coffee/types';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HiRefresh, HiDownload, HiChevronDown, HiDocumentText, HiCode, HiDotsVertical, HiCheck, HiX } from 'react-icons/hi';
 
 interface OrdersTableProps {
@@ -65,34 +65,53 @@ const Button = ({
 };
 
 const DropdownMenu = ({ isOpen, onClose, options, className = "" }: DropdownMenuProps) => {
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        // Add event listener to document
+        document.addEventListener('mousedown', handleClickOutside);
+        
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     return (
-        <>
-            <div className="fixed inset-0 z-10" onClick={onClose}></div>
-            <div className={`absolute right-0 top-12 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px] ${className}`}>
-                {options.map((option, index) => (
-                    <button
-                        key={index}
-                        onClick={() => {
-                            if ('action' in option) {
-                                option.action();
-                            } else {
-                                option.onClick();
-                            }
-                            onClose();
-                        }}
-                        className={
-                            'className' in option ? option.className :
-                                "w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+        <div 
+            ref={dropdownRef}
+            className={`absolute right-0 top-12 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px] ${className}`}
+        >
+            {options.map((option, index) => (
+                <button
+                    key={index}
+                    onClick={() => {
+                        if ('action' in option) {
+                            option.action();
+                        } else {
+                            option.onClick();
                         }
-                    >
-                        {option.icon}
-                        {option.label}
-                    </button>
-                ))}
-            </div>
-        </>
+                        onClose();
+                    }}
+                    className={
+                        'className' in option ? option.className :
+                            "w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    }
+                >
+                    {option.icon}
+                    {option.label}
+                </button>
+            ))}
+        </div>
     );
 };
 

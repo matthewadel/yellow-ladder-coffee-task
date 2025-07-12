@@ -14,15 +14,10 @@ interface NavigationSection {
     links: string[];
 }
 
-interface FooterLink {
-    label: string;
-    href?: string;
-}
-
 // Reusable Components
 const SocialIcon = ({ name, icon }: SocialLink) => (
-    <a 
-        className="text-gray-400 hover:text-orange-600 transition-colors"
+    <a
+        className="text-gray-400 hover:text-orange-600 transition-colors cursor-pointer"
         aria-label={name}
     >
         <span className="sr-only">{name}</span>
@@ -38,7 +33,7 @@ const NavigationLinks = ({ title, links }: NavigationSection) => (
         <ul className="space-y-3">
             {links.map((link) => (
                 <li key={link}>
-                    <a className="text-gray-600 hover:text-orange-600 transition-colors">
+                    <a className="text-gray-600 hover:text-orange-600 transition-colors cursor-pointer">
                         {link}
                     </a>
                 </li>
@@ -47,13 +42,6 @@ const NavigationLinks = ({ title, links }: NavigationSection) => (
     </div>
 );
 
-const FooterLink = ({ label }: FooterLink) => (
-    <a 
-        className="text-sm text-gray-500 hover:text-orange-600 transition-colors"
-    >
-        {label}
-    </a>
-);
 
 const CompanyLogo = () => (
     <div className="flex items-center gap-3 mb-2">
@@ -81,11 +69,6 @@ const NAVIGATION_SECTIONS: NavigationSection[] = [
         title: "Support",
         links: ["Help Center", "Documentation", "Contact Us", "System Status"]
     }
-];
-
-const FOOTER_LINKS: FooterLink[] = [
-    { label: "Privacy Policy" },
-    { label: "Terms of Service" }
 ];
 
 const COMPANY_DESCRIPTION = "Premium coffee management system designed to streamline your coffee shop operations. From order tracking to inventory management, we've got you covered.";
@@ -123,9 +106,12 @@ export function Footer() {
                                 © 2025 Yellow Ladder Coffee. All rights reserved.
                             </p>
                             <div className="flex items-center space-x-4">
-                                {FOOTER_LINKS.map((link) => (
-                                    <FooterLink key={link.label} {...link} />
-                                ))}
+                                <a className="text-sm text-gray-500 hover:text-orange-600 transition-colors">
+                                    Privacy Policy
+                                </a>
+                                <a className="text-sm text-gray-500 hover:text-orange-600 transition-colors">
+                                    Terms of Service
+                                </a>
                             </div>
                         </div>
 
