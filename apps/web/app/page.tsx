@@ -1,109 +1,112 @@
-import Image from 'next/image';
-import Link from 'next/link';
+"use client"
+import { useState } from 'react';
+import { OrdersTable, Order, OrderStatus, StatsCards } from './components';
+
+// Mock data for the dashboard
+const initialOrders: Order[] = [
+  {
+    id: 'ORD-170384690234',
+    timestamp: '1/15/2024 02:15 PM',
+    items: [
+      { name: 'Iced Americano (Large)', price: 4.00 },
+      { name: 'Iced Americano (Large)', price: 4.00 }
+    ],
+    total: 8.00,
+    status: 'Completed'
+  },
+  {
+    id: 'ORD-170384679123',
+    timestamp: '1/15/2024 02:10 PM',
+    items: [
+      { name: 'Espresso (Small)', price: 2.20 },
+      { name: 'Espresso (Small)', price: 2.20 },
+      { name: 'Latte (Medium)', price: 3.90 }
+    ],
+    total: 8.30,
+    status: 'Completed'
+  },
+  {
+    id: 'ORD-170384679012',
+    timestamp: '1/15/2024 02:05 PM',
+    items: [
+      { name: 'Latte (Large)', price: 4.30 },
+      { name: 'Iced Americano (Medium)', price: 3.60 }
+    ],
+    total: 7.90,
+    status: 'Pending'
+  },
+  {
+    id: 'ORD-170384567901',
+    timestamp: '1/15/2024 02:00 PM',
+    items: [
+      { name: 'Espresso (Small)', price: 2.20 }
+    ],
+    total: 2.20,
+    status: 'Completed'
+  },
+  {
+    id: 'ORD-170384234568',
+    timestamp: '1/15/2024 01:45 PM',
+    items: [
+      { name: 'Latte (Large)', price: 4.30 },
+      { name: 'Latte (Large)', price: 4.30 },
+      { name: 'Espresso (Small)', price: 2.20 },
+      { name: 'Iced Americano (Medium)', price: 3.60 }
+    ],
+    total: 14.40,
+    status: 'Completed'
+  },
+  {
+    id: 'ORD-170384123457',
+    timestamp: '1/15/2024 01:40 PM',
+    items: [
+      { name: 'Espresso (Small)', price: 2.20 },
+      { name: 'Latte (Small)', price: 3.50 }
+    ],
+    total: 5.70,
+    status: 'Pending'
+  },
+  {
+    id: 'ORD-170384098765',
+    timestamp: '1/15/2024 01:35 PM',
+    items: [
+      { name: 'Cappuccino (Large)', price: 4.50 },
+      { name: 'Croissant', price: 2.80 }
+    ],
+    total: 7.30,
+    status: 'Cancelled'
+  }
+];
 
 export default function Home() {
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
+
+  const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
+    setOrders(prev => prev.map(order =>
+      order.id === orderId ? { ...order, status: newStatus } : order
+    ));
+  };
+
+  // Calculate statistics
+  const pendingOrdersCount = orders.filter(order => order.status === 'Pending').length;
+  const totalRevenue = orders
+    .filter(order => order.status === 'Completed')
+    .reduce((sum, order) => sum + order.total, 0);
+  const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream to-yellow-ladder">
-      {/* Navigation */}
-      <nav className="bg-coffee-brown text-white p-4 shadow-lg">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="text-2xl font-bold">☕ Yellow Ladder Coffee</div>
-          <div className="space-x-6">
-            <Link
-              href="/"
-              className="hover:text-yellow-ladder transition-colors"
-            >
-              Home
-            </Link>
-            <Link
-              href="/menu"
-              className="hover:text-yellow-ladder transition-colors"
-            >
-              Menu
-            </Link>
-            <Link
-              href="/about"
-              className="hover:text-yellow-ladder transition-colors"
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="hover:text-yellow-ladder transition-colors"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </nav>
+    <div className="p-6">
+      <StatsCards
+        totalOrders={orders.length}
+        totalRevenue={totalRevenue}
+        pendingOrdersCount={pendingOrdersCount}
+        avgOrderValue={avgOrderValue}
+      />
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-coffee-dark mb-6">
-            Welcome to Yellow Ladder Coffee
-          </h1>
-          <p className="text-xl text-coffee-brown mb-8 max-w-2xl mx-auto">
-            Climb to new heights with our premium coffee blends. Each cup is
-            carefully crafted to deliver an exceptional experience.
-          </p>
-          <div className="space-x-4">
-            <button className="btn-primary">Order Now</button>
-            <button className="btn-secondary">Learn More</button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="bg-white py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-coffee-dark mb-12">
-            Why Choose Yellow Ladder?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="card text-center">
-              <div className="text-4xl mb-4">🌱</div>
-              <h3 className="text-xl font-semibold text-coffee-dark mb-4">
-                Premium Quality
-              </h3>
-              <p className="text-coffee-brown">
-                Sourced from the finest coffee beans around the world, ensuring
-                exceptional quality in every cup.
-              </p>
-            </div>
-            <div className="card text-center">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-xl font-semibold text-coffee-dark mb-4">
-                Fast Delivery
-              </h3>
-              <p className="text-coffee-brown">
-                Quick and reliable delivery service to get your coffee fix
-                exactly when you need it.
-              </p>
-            </div>
-            <div className="card text-center">
-              <div className="text-4xl mb-4">♻️</div>
-              <h3 className="text-xl font-semibold text-coffee-dark mb-4">
-                Sustainable
-              </h3>
-              <p className="text-coffee-brown">
-                Committed to sustainable practices and supporting coffee farmers
-                around the globe.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-coffee-dark text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2025 Yellow Ladder Coffee. All rights reserved.</p>
-          <p className="mt-2">
-            Built with Next.js, TypeScript, and Tailwind CSS
-          </p>
-        </div>
-      </footer>
+      <OrdersTable
+        orders={orders}
+        onUpdateOrderStatus={updateOrderStatus}
+      />
     </div>
-  );
+  )
 }
