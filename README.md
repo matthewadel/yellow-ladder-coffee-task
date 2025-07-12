@@ -1,153 +1,255 @@
-# Yellow Ladder Coffee - Monorepo
+# Yellow Ladder Coffee ☕
 
-A monorepo containing three applications:
+A full-stack coffee ordering system built as a monorepo containing web, mobile, and backend applications. This project demonstrates offline-first mobile architecture with Redux state management, real-time order processing, and scalable deployment patterns.
 
-- **Web App**: Next.js with TypeScript, Tailwind CSS
-- **Mobile App**: React Native (bare setup)
-- **Backend API**: Express.js with TypeScript
+## 🛠️ Tech Stack
 
-## Project Structure
+- **Web Dashboard**: Next.js 14 (App Router), TypeScript, Tailwind CSS, React Hooks
+- **Mobile App**: React Native 0.80, TypeScript, Redux Toolkit, React Navigation
+- **API Server**: Express.js, TypeScript, CORS, Morgan logging, Helmet security
+- **Network Management**: @react-native-community/netinfo for connectivity detection
+- **State Management**: Redux Toolkit with async thunks and offline persistence
+- **Shared Code**: Local packages for types and API client
+
+
+### Development & Tooling
+- **Monorepo**: npm workspaces with concurrent development
+- **TypeScript**: Strict typing across all applications
+- **Linting**: ESLint + Prettier for consistent code style
+- **Testing**: Jest configuration for all packages
+- **Build Tools**: Concurrently for multi-app development
+
+## 📱 Offline-First Mobile Architecture
+
+The mobile application implements a sophisticated offline-first strategy using Redux to ensure seamless user experience regardless of network connectivity:
+
+### Initial App Load
+- **Drinks Cache**: On first app launch, the system fetches and caches the complete drinks menu in Redux store
+- **Network Detection**: Uses `@react-native-community/netinfo` to continuously monitor internet connectivity
+- **Visual Indicators**: Real-time network status displayed in the header (Online/Offline/Checking)
+
+### Offline Order Management
+- **Local Storage**: When offline, orders are immediately saved to Redux store with local timestamps and IDs
+- **Queue System**: Failed requests are queued locally and automatically retry when connectivity is restored
+- **User Feedback**: Toast notifications inform users that orders are saved locally and will sync when online
+
+### Connectivity Restoration
+- **Auto-Sync**: The app automatically detects when internet connection is restored
+- **Batch Processing**: All queued offline orders are processed sequentially when back online
+- **Cleanup**: Successfully synced orders are removed from local Redux store
+- **Error Handling**: Failed sync attempts are logged and user is notified
+
+
+
+## 📁 Project Structure
 
 ```
 yellow-ladder-coffee/
 ├── apps/
-│   ├── web/          # Next.js web application
-│   ├── mobile/       # React Native mobile app
-│   └── server/       # Express.js backend API
-├── packages/
-│   └── shared-types/ # Shared TypeScript interfaces
-└── package.json      # Root package.json with workspace configuration
+│   ├── web/                    # Next.js dashboard application
+│   │   ├── app/               # Next.js 14 App Router
+│   │   ├── components/        # Reusable UI components
+│   │   ├── hooks/            # Custom React hooks
+│   │   └── ui/               # UI components and utilities
+│   ├── mobile/               # React Native application
+│   │   ├── src/
+│   │   │   ├── components/   # React Native components
+│   │   │   ├── context/      # Network context provider
+│   │   │   ├── hooks/        # Custom hooks (network, orders)
+│   │   │   ├── navigation/   # React Navigation setup
+│   │   │   ├── screens/      # App screens
+│   │   │   ├── store/        # Redux store and slices
+│   │   │   ├── ui/          # UI components and toast system
+│   │   │   └── utils/       # Utility functions
+│   │   ├── android/         # Android build configuration
+│   │   └── ios/            # iOS build configuration
+│   └── server/             # Express.js backend API
+│       ├── src/
+│       │   ├── controllers/ # API route handlers
+│       │   ├── middlewares/ # Express middlewares
+│       │   ├── routes/     # API route definitions
+│       │   ├── services/   # Business logic
+│       │   └── utils/      # Utility functions
+├── packages/               # Shared packages
+│   ├── api-request/       # HTTP client for API calls
+│   └── types/            # Shared TypeScript interfaces
+└── package.json          # Root workspace configuration
 ```
 
-## Getting Started
+## 🚀 Setup Instructions
 
 ### Prerequisites
 
-- Node.js 18+ and npm 9+
-- React Native development environment (for mobile app)
-- iOS Simulator / Android Emulator (for mobile app testing)
+- **Node.js** 18+ and **npm** 9+
+- **React Native development environment** (for mobile app)
+  - Xcode (for iOS development)
+  - Android Studio (for Android development)
+- **iOS Simulator** / **Android Emulator** (for mobile app testing)
 
-### Installation
+### Quick Start
 
-1. Clone the repository
-2. Install dependencies for all workspaces:
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd yellow-ladder-coffee-task
+   ```
+
+2. **Install all dependencies**
    ```bash
    npm install
    ```
    
-   This will automatically:
-   - Install all dependencies
-   - Build the shared types package
-   - Set up iOS dependencies for React Native
+   This command automatically:
+   - Installs dependencies for all workspaces
+   - Builds the shared packages (types & api-request)
+   - Sets up iOS dependencies for React Native (pod install)
 
-### Development
+3. **Start development servers**
+   ```bash
+   npm run dev
+   ```
+   
+   This starts:
+   - Shared types in watch mode
+   - Web dashboard at `http://localhost:3000`
+   - API server at `http://localhost:5000`
 
-#### Start all apps (web + api + shared types watch):
+4. **Start mobile app** (in a separate terminal)
+   ```bash
+   npm run dev:mobile    # Start Metro bundler
+   npm run dev:ios       # Launch iOS simulator
+   npm run dev:android   # Launch Android emulator
+   ```
 
+### Individual App Development
+
+if you want to run each app individually,
 ```bash
-npm run dev
-```
-
-This will start:
-- Shared types in watch mode (rebuilds on changes)
-- Web app development server
-- API development server
-
-#### Start individual apps:
-
-```bash
-# Shared types (watch mode)
-npm run dev:shared-types
-
-# Web app (Next.js)
+# Web dashboard only
 npm run dev:web
 
-# Backend API (Express.js)
+# API server only  
 npm run dev:server
 
-# Mobile app (React Native)
+# Metro bundler for mobile apps
 npm run dev:mobile
+
+# Android App
+npm run dev:android
+
+# IOS Aoo
+npm run dev:ios
 ```
 
-### Building
-
-#### Build all apps:
+### Building for Production
 
 ```bash
+# Build all applications
 npm run build
-```
 
-#### Build individual apps:
-
-```bash
-npm run build:shared-types
+# Build individual apps
 npm run build:web
 npm run build:server
 npm run build:mobile
+npm run build:packages
 ```
 
-### Shared Types
+### Shared Packages Development
+Basically I've created two packages to used by all apps in our monorepo and this to guarantee consistency throughtout all our apps and these packages are
+`packages/types` that has the types of shared entites of our app and `packages/api-request` that has a basic setup for all network requests
 
-The project includes a shared types package (`packages/shared-types`) containing TypeScript interfaces used across all applications:
 
-- `Drink`: Coffee/beverage items
-- `OrderDrink`: Items in an order
-- `Order`: Customer orders
-- `IOrderStatus`: Order status enum
+### Production Infrastructure Stack
 
-#### Working with Shared Types
+**Frontend Deployment:**
+- **Web Dashboard**: Vercel (seamless Next.js integration) or AWS S3
+- **Mobile Apps**: App Store (iOS) and Google Play Store (Android)
 
-1. **Making changes**: Edit files in `packages/shared-types/src/`
-2. **Building**: Run `npm run build:shared-types` 
-3. **Development**: Run `npm run dev:shared-types` for watch mode
-4. **Clean rebuild**: Run `npm run clean:dist && npm run build:shared-types`
+**Backend Services:**
+- **API Server**: AWS ECS Fargate containers
+- **Load Balancer**: Application Load Balancer (ALB) with health checks
+- **CDN**: CloudFront for static assets and API response caching
 
-### Cleaning
+## 🔧 Development Workflow
 
-```bash
-npm run clean          # Remove node_modules
-npm run clean:dist     # Remove dist folders  
-npm run clean:all      # Remove everything
+### Workspace Management
+- **Independent Development**: Each app can be developed separately
+- **Shared Dependencies**: Common packages managed at workspace level
+- **Hot Reloading**: All apps support real-time development updates
+- **Concurrent Development**: Run multiple apps simultaneously
 
-### Testing
+### Working with Shared Packages
+1. **Types Package** (`packages/types`): Shared TypeScript interfaces
+   - `Drink`, `Order`, `OrderDrink`, `IOrderStatus`
+   - Ensures type safety across web, mobile, and server
 
-```bash
-npm run test
-```
+2. **API Request Package** (`packages/api-request`): HTTP client
+   - Unified API interface for web and mobile
+   - Consistent error handling and request formatting
 
-### Linting
+### Mobile Development Tips
+- **Metro Bundler**: Automatic package resolution for local packages
+- **iOS Development**: Pod install runs automatically on npm install
+- **Android Development**: Gradle sync handled by React Native CLI
+- **Network Testing**: Use device connectivity settings to test offline scenarios
 
-```bash
-npm run lint
-```
+## 🏗️ Project Anatomy
 
-## Apps
+### 🌐 Web Application (`apps/web`)
 
-### Web App (`apps/web`)
+The Next.js 14 web dashboard provides real-time order management with a modern, responsive interface.
 
-- Next.js 14 with App Router
-- TypeScript
-- Tailwind CSS
-- ESLint + Prettier
+**Folder Purposes:**
+- **`app/`**: Core application using Next.js 14 App Router architecture
+- **`app/components/`**: Dashboard-specific components like orders table, statistics cards, and navigation
+- **`app/hooks/`**: Custom hooks for API data fetching and state management
+- **`app/ui/`**: Reusable UI components, loading states, error handling, and design system
+- **`public/`**: Static assets including images, icons, and other public resources
 
-### Mobile App (`apps/mobile`)
+### 📱 Mobile Application (`apps/mobile`)
 
-- React Native (bare setup)
-- TypeScript
-- React Navigation
-- ESLint + Prettier
+The React Native mobile app provides offline-first order creation with Redux state management.
 
-### Backend API (`apps/api`)
 
-- Express.js with TypeScript
-- CORS enabled
-- Morgan for logging
-- Nodemon for development
-- ESLint + Prettier
+**Folder Purposes:**
+- **`src/components/`**: Feature-organized React Native components with numbered folders for user flow
+- **`src/context/`**: Global state providers, primarily for network connectivity management
+- **`src/hooks/`**: Custom hooks for network monitoring, order creation, and offline functionality
+- **`src/navigation/`**: React Navigation setup with stack navigator and screen routing
+- **`src/screens/`**: Full-screen components representing main app pages/views
+- **`src/store/`**: Redux Toolkit store with slices for drinks menu and offline orders queue
+- **`src/ui/`**: UI utilities including toast notification system and design components
+- **`src/utils/`**: Helper functions for API configuration and utility operations
+- **`src/assets/`**: Local images, icons, and static resources
+- **`android/`**: Native Android build configuration, Gradle files, and app settings
+- **`ios/`**: Native iOS build configuration, Xcode projects, and CocoaPods setup
 
-## Development Workflow
+### 🔧 Server Application (`apps/server`)
 
-1. Each app can be developed independently
-2. Shared code can be placed in `packages/` directory
-3. All apps share the same linting and formatting configuration
-4. Use workspaces to manage dependencies efficiently
+The Express.js backend API provides RESTful endpoints with comprehensive error handling and security middleware.
+
+**Folder Purposes:**
+- **`src/controllers/`**: HTTP request handlers that process incoming requests and send responses
+- **`src/middlewares/`**: Express middleware for error handling, request validation, and security
+- **`src/routes/`**: API endpoint definitions and routing logic for different resource types
+- **`src/schemas/`**: Data validation schemas for request/response structure validation
+- **`src/services/`**: Business logic layer containing core application functionality
+- **`src/utils/`**: Utility functions, custom error classes, and helper modules
+
+### 📦 Shared Packages
+
+**Package Purposes:**
+- **`packages/types/`**: Centralized TypeScript interfaces ensuring type consistency across all applications
+- **`packages/api-request/`**: Unified HTTP client library providing consistent API communication for web and mobile apps
+
+**Benefits of This Structure:**
+- **Feature-Based Organization**: Components and logic grouped by functionality rather than file type
+- **Clear Separation of Concerns**: Each folder has a specific responsibility and purpose
+- **Scalability**: Easy to add new features without restructuring existing code
+- **Maintainability**: Developers can quickly locate and modify specific functionality
+- **Consistency**: Shared packages ensure uniform patterns across all applications
+
+
+
+
+**important note:** i wanted to create database using postgreeSQL and manipulate the data inside the tables using typeorm or prisma but i realized that the app is so simple to create adatabase setup for it, it's only three apis not more
