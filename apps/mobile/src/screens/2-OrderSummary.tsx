@@ -9,24 +9,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute, } from '@react-navigation/native';
 import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
-import { useAppDispatch } from '../store/hooks';
-import { createOrder } from '../store/ordersSlice';
 import {
     OrderSummaryHeader,
     OrderSummaryFooter,
     OrderList,
 } from '../components/2-OrderSummary';
-import { useNetworkContext } from '../context';
-import { showToast } from '../ui/toast-simple';
+import { useCreateOrder } from '../hooks';
 
 export const OrderSummaryScreen: React.FC = () => {
     const navigation = useNavigation();
     const route = useRoute<any>();
-    const dispatch = useAppDispatch();
     const [orderItems, setOrderItems] = useState<OrderDrink[]>([])
-
+    const { createOrderRequest, isLoading } = useCreateOrder()
     const { orderItems: inputOrderItems, onEditItem, onRemoveItem, onSubmitOrder } = route.params;
-    const { isInternetReachable } = useNetworkContext();
 
     useEffect(() => {
         if (inputOrderItems)
@@ -65,18 +60,8 @@ export const OrderSummaryScreen: React.FC = () => {
 
 
     const handleSubmitOrder = () => {
-        if (!isInternetReachable) {
 
-            dispatch(createOrder({
-                id: new Date().getTime().toString(),
-                orderDrinks: orderItems,
-                orderTimestamp: new Date().toISOString()
-            }));
-            showToast('your order is saved, once connected to the internet, we\'ll create everything for you', 'warning');
-        }
-        else
-            showToast('Order submitted successfully!', 'success');
-
+        createOrderRequest(orderItems)
         onSubmitOrder();
         navigation.goBack();
     };
@@ -99,6 +84,7 @@ export const OrderSummaryScreen: React.FC = () => {
                     <OrderSummaryFooter
                         orderItems={orderItems}
                         onSubmitOrder={handleSubmitOrder}
+                        isLoading={isLoading}
                     />
                 </View>
             </SafeAreaView>

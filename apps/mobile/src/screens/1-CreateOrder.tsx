@@ -1,12 +1,29 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { CoffeeList, Header } from '../components';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import { useSelector } from 'react-redux';
+import { useNetworkContext } from '../context';
+import { useSelector } from 'react-redux';
+import { Order } from '@yellow-ladder-coffee/shared-types';
+import { useCreateOrder } from '../hooks';
 
 export const CreateOrder = () => {
-    // const orders = useSelector((state: any) => state.orders);
+    const { isInternetReachable } = useNetworkContext();
+    const { orders } = useSelector((state: { orders: { orders: Order[] } }) => state.orders)
+    const { createOrderRequest } = useCreateOrder(true)
+
+    useEffect(() => {
+        console.log('orders', orders)
+        if (orders.length && isInternetReachable) {
+            orders.forEach(order => {
+                console.log('order.orderDrinks', order.orderDrinks)
+                createOrderRequest(order.orderDrinks)
+            })
+
+        }
+    }, [isInternetReachable, orders, createOrderRequest])
+
     return (
         <LinearGradient
             colors={['#6F4E37', '#8B4513', '#A0522D']}

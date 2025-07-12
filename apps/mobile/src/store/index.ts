@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import ordersReducer from './ordersSlice';
+import drinksReducer from './drinksSlice';
 
 export const store = configureStore({
   reducer: {
     orders: ordersReducer,
+    drinks: drinksReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

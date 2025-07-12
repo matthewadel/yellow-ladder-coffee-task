@@ -1,79 +1,46 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, RefreshControl, Alert } from 'react-native';
 import { s } from 'react-native-size-matters';
 import { useNavigation } from '@react-navigation/native';
 import { CoffeeSizeModal } from './CoffeeSizeModal';
 import { Drink, OrderDrink } from '@yellow-ladder-coffee/shared-types';
 import { SCREENS } from '../../navigation/constants';
-
-const coffeeItems: Drink[] = [
-    {
-        id: '1',
-        name: 'Espresso',
-        description: 'Rich, bold shot of pure coffee',
-        prices: [
-            { size: 'small', price: 2.0 },
-            { size: 'medium', price: 2.5 },
-            { size: 'large', price: 3.0 }
-        ]
-    },
-    {
-        id: '2',
-        name: 'Latte',
-        description: 'Smooth espresso with steamed milk',
-        prices: [
-            { size: 'small', price: 3.5 },
-            { size: 'medium', price: 3.9 },
-            { size: 'large', price: 4.3 }
-        ]
-    },
-    {
-        id: '3',
-        name: 'Iced Americano',
-        description: 'Espresso shots over ice with cold water',
-        prices: [
-            { size: 'medium', price: 2.5 },
-            { size: 'large', price: 3.0 }
-        ]
-    },
-    {
-        id: '4',
-        name: 'Cappuccino',
-        description: 'Classic Italian blend with velvety microfoam',
-        prices: [
-            { size: 'small', price: 2.0 },
-            { size: 'medium', price: 3.0 },
-            { size: 'large', price: 3.5 }
-        ]
-    },
-    {
-        id: '5',
-        name: 'Mocha',
-        description: 'Rich espresso meets premium dark chocolate',
-        prices: [
-            { size: 'small', price: 2.0 },
-            { size: 'medium', price: 3.5 },
-            { size: 'large', price: 4.0 }
-        ]
-    },
-    {
-        id: '6',
-        name: 'Cold Brew',
-        description: '12-hour steeped coffee with natural sweetness',
-        prices: [
-            { size: 'small', price: 2.0 },
-            { size: 'medium', price: 2.8 },
-            { size: 'large', price: 3.3 }
-        ]
-    },
-]
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchDrinks } from '../../store/drinksSlice';
 
 export const CoffeeList = () => {
     const navigation = useNavigation<any>();
+    const dispatch = useAppDispatch();
+    const { drinks, loading, error } = useAppSelector((state) => state.drinks);
+    
     const [selectedCoffee, setSelectedCoffee] = useState<Drink | null>(null);
     const [updatedCoffee, setUpdatedCoffee] = useState<Drink | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [orderItems, setOrderItems] = useState<OrderDrink[]>([]);
+
+    // Fetch drinks when component mounts
+    useEffect(() => {
+        dispatch(fetchDrinks());
+    }, [dispatch]);
+
+    // Handle pull-to-refresh
+    const handleRefresh = useCallback(() => {
+        dispatch(fetchDrinks());
+    }, [dispatch]);
+
+    // Show error alert if there's an error fetching drinks
+    useEffect(() => {
+        if (error) {
+            Alert.alert(
+                'Error Loading Drinks', 
+                error, 
+                [
+                    { text: 'Retry', onPress: () => dispatch(fetchDrinks()) },
+                    { text: 'OK', style: 'cancel' }
+                ]
+            );
+        }
+    }, [error, dispatch]);
 
     const handleCoffeePress = (coffee: Drink) => {
         setSelectedCoffee(coffee);
@@ -102,12 +69,12 @@ export const CoffeeList = () => {
     }, []);
 
     const handleEditItem = useCallback((item: OrderDrink) => {
-        const coffeeItem = coffeeItems.find(coffee => coffee.name === item.name);
+        const coffeeItem = drinks.find(coffee => coffee.name === item.name);
         if (coffeeItem) {
             setUpdatedCoffee({ ...coffeeItem, id: item.id });
             setModalVisible(true);
         }
-    }, []);
+    }, [drinks]);
 
     const handleShowOrderSummary = useCallback(() => {
         navigation.navigate(SCREENS.ORDER_SUMMARY, {
@@ -190,16 +157,34 @@ export const CoffeeList = () => {
                 )}
             </View>
         </View>
-    ), [orderItems.length, handleShowOrderSummary])
+    ), [orderItems.length, handleShowOrderSummary]);
+
+    const ListEmptyComponent = useMemo(() => (
+        <View style={styles.emptyState}>
+            <Text style={styles.emptyStateTitle}>No drinks available</Text>
+            <Text style={styles.emptyStateSubtitle}>
+                {loading ? 'Loading drinks...' : 'Pull down to refresh'}
+            </Text>
+        </View>
+    ), [loading]);
 
     return (
         <>
             <FlatList
                 ListHeaderComponent={ListHeaderComponent}
+                ListEmptyComponent={ListEmptyComponent}
                 showsVerticalScrollIndicator={false}
                 style={styles.listStyle}
-                data={coffeeItems}
+                data={drinks}
                 renderItem={renderCoffeeItem}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading}
+                        onRefresh={handleRefresh}
+                        tintColor="#8B4513"
+                        title="Pull to refresh drinks..."
+                    />
+                }
             />
             <CoffeeSizeModal
                 visible={modalVisible}
@@ -329,5 +314,23 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: s(14),
         fontWeight: '600',
+    },
+    emptyState: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: s(60),
+        paddingHorizontal: s(20),
+    },
+    emptyStateTitle: {
+        fontSize: s(18),
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: s(8),
+        textAlign: 'center',
+    },
+    emptyStateSubtitle: {
+        fontSize: s(14),
+        color: '#666',
+        textAlign: 'center',
     },
 })

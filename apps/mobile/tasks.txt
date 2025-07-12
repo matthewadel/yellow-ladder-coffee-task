@@ -1,8 +1,6 @@
 handle colors throughout the application
 implement absolute imports and it would be better it it worked for the whole repo
-flatlist inside coffeelist pagination and implement onRefresh
-when he is online just send his previous orders to the server and delete them from redux and show a success message to him
-save drinks in redux using redux-thunk so the app can work offline
+if there is an api error, message not previewed from the server
 
 
 react-native-linear-gradient

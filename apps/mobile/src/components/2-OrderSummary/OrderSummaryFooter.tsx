@@ -1,18 +1,20 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { s } from 'react-native-size-matters';
 import { OrderDrink } from '@yellow-ladder-coffee/shared-types';
 
 interface OrderSummaryFooterProps {
     onSubmitOrder: () => void;
     orderItems: OrderDrink[];
+    isLoading?: boolean;
 }
 
 export const OrderSummaryFooter: React.FC<OrderSummaryFooterProps> = ({
     orderItems,
     onSubmitOrder,
+    isLoading = false,
 }) => {
-    const isDisabled = orderItems.length === 0;
+    const isDisabled = orderItems.length === 0 || isLoading;
 
     const calculateTotal = () => {
         return orderItems.reduce((total: number, item: OrderDrink) => total + item.price, 0);
@@ -32,12 +34,16 @@ export const OrderSummaryFooter: React.FC<OrderSummaryFooterProps> = ({
                 onPress={onSubmitOrder}
                 disabled={isDisabled}
             >
-                <Text style={[
-                    styles.submitButtonText,
-                    isDisabled && styles.submitButtonTextDisabled
-                ]}>
-                    Submit Order
-                </Text>
+                {isLoading ? (
+                    <ActivityIndicator size="small" color="#8B4513" />
+                ) : (
+                    <Text style={[
+                        styles.submitButtonText,
+                        isDisabled && styles.submitButtonTextDisabled
+                    ]}>
+                        Submit Order
+                    </Text>
+                )}
             </TouchableOpacity>
         </View>
     );
